@@ -10,5 +10,5 @@
   :target-path "target/%s"
   :profiles { :ustripe-clojure {:dependencies [[aleph "0.4.4"]
                                                [manifold "0.1.6"]]}
-              :dev [:ustripe-clojure {:plugins [[lein-ring "0.11.0"]]}]
+              :dev [:ustripe-clojure #_{:plugins [[lein-ring "0.11.0"]]}]
               :uberjar [:ustripe-clojure {:aot :all}]})

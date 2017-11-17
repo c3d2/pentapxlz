@@ -1,12 +1,13 @@
-(ns pentapxlz.ustripe-clojure.core
+(ns pentapxlz.ustripe-clojure
   "A lib to communicate with ustriped from clojure.
    For ustriped see: https://github.com/astro/pile/tree/master/ustriped"
   (:gen-class)
-  (:require [aleph.udp :as udp]
+  (:require [pentapxlz.pxlz-state :refer [pxlz]]
+            [aleph.udp :as udp]
             [manifold.stream :refer [put! close!]]
             [clojure.pprint :refer [pprint]]))
 
-(defn pxlz-send! [pxlz target]
+(defn pxlz-send! [target]
   (let [client-socket @(udp/socket {})
         msg (->> (get-in @pxlz [target :pxlzState])
                  (apply concat)
@@ -23,8 +24,8 @@
        (close! client-socket)
        @send-success?))
 
-(defn pxlz-renderer! [pxlz targets timeout]
+(defn pxlz-renderer! [targets timeout]
   (future (loop [] (doseq [target targets]
-                          (pxlz-send! pxlz target))
+                          (pxlz-send! target))
                           (Thread/sleep timeout)
                           (recur))))
