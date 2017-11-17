@@ -23,14 +23,24 @@
   (let [target (keyword (get params "target" "ledbeere"))
         timeout (max 100 (Integer/parseInt (get params "timeout" "1000")))
         ansicolor (get params "ansicolor" nil)
+        rgbcolor (get params "rgbcolor" ansicolor)
+        separator (get params "separator" "")
+        padding (Integer/parseInt (get params "padding" "200"))
+        reverseFn (if (get params "reverse")
+                       reverse
+                       identity)
         body (chan)]
 
     (a/go-loop []
-      (let [pxlzState (get-in @pxlz [target :pxlzState])]
+      (let [pxlzState-hostcolors (-> (get-in @pxlz [target :pxlzState])
+                                     reverseFn)
+            pxlzState (if rgbcolor
+                          (map #(apply (get-in @pxlz [target :colors-inverse]) %) pxlzState-hostcolors)
+                          pxlzState-hostcolors)]
            (if ansicolor
                (>! body (str (char 27) "[2J"
-                             (join " " (apply vector (map rgb->ansi pxlzState)))
-                             (join " " (for [_ (range 80)] "")) "\n"))
+                             (join separator (apply vector (map rgb->ansi pxlzState)))
+                             (join " " (for [_ (range padding)] "")) "\n"))
                (>! body (str (apply vector pxlzState) "\n")))
            (<! (a/timeout timeout))
            (recur)))
@@ -45,5 +55,6 @@
       (GET "/state" [] streaming-state-handler)
       (route/not-found "No such page."))))
 
-(defonce server (http/start-server handler {:host "0.0.0.0"
+(defonce server (http/start-server handler {:raw-stream? true
+                                            :host "0.0.0.0"
                                             :port 8080}))

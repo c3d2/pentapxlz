@@ -3,11 +3,13 @@
 
 (defonce pxlz (atom {:ledbeere {:nrPxlz 226
                                 :colors (fn [r g b] [b g r])
+                                :colors-inverse (fn [b g r] [r g b])
                                 :brightMax (* 3 0xff)
                                 :ustripe {:host "ledbeere.hq.c3d2.de"
                                           :port 2342}}
                      :ledball1 {:nrPxlz 640
                                 :colors (fn [r g b] [r b g])
+                                :colors-inverse (fn [r b g] [r g b])
                                 :brightMax (* 2 0xff)
                                 :geometry {:spiral [48, 59, 70, 75, 80, 71, 61, 57, 42, 37, 26, 17, 31]}
                                 :ustripe {:host "ledball1.hq.c3d2.de"
