@@ -1,13 +1,10 @@
 (ns pentapxlz.webapi.core
   (:require [aleph.http :as http]
-            [ring.middleware.params :refer [wrap-params]]
-            [ring.util.http-response :refer [ok #_not-found]]
             [compojure.core :refer [routes]]
-            [compojure.api.sweet :refer [GET api context describe]]
+            [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
             [pentapxlz.webapi.stream.state :refer [streaming-state-handler]]
-            [clojure.spec.alpha :as s]
-            [spec-tools.spec :as spec]))
+            [pentapxlz.webapi.set-state :refer [put-state-handler]]))
 
 (def app
   (routes
@@ -18,30 +15,21 @@
          :spec "/api/swagger.json"
          :data {:info {:title "pentaPxlz API"
                        :description "[P]retty e[X]change of [L]ed[z] … [A]nd other [P]ixel [I]nformation"}
-                :tags [{:name "api", :description "not stable now"}]}}}
+                :tags [{:name "api" :description "not stable now"}]}}}
 
       (context "/api" []
         :tags ["api"]
-        :coercion :spec  ;; TODO: coercion+descriptions
-  
-        (GET "/pxlzstate" []
-          :summary "Request the current pxlzstate of a [target]"
-          :query-params [{target :- string? "ledbeere"}
-                         {streamevery :- spec/int? 0}
-                         {ansicolor :- boolean? false}
-                         {rgbcolor :- boolean? false}
-                         {reversed :- boolean? false}
-                         {separator :- string? ""}
-                         {padding :- spec/int? 200}]
-          streaming-state-handler)))
-
+        :coercion :spec
+        (put-state-handler "/pxlzstate")
+        (streaming-state-handler "/pxlzstate")))
+        
     (not-found (str "<div align=\"center\">"
                     "No such page, but you can use the" "<br/>"
                     "&lt;&lt;&lt; " "<a href=\"/api\">pentaPxlz API Documentation</a>" " /&gt;&gt;"
                     "</div>"))))
 
 (defn server-start []
-  (http/start-server app {:raw-stream? true
+  (http/start-server app {:raw-stream? false  ;; otherwise problems with PUT/POST
                           :host "0.0.0.0"
                           :port 8080}))
 

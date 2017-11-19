@@ -10,8 +10,8 @@
   :target-path "target/%s"
   :profiles {:ustripe-clojure {:dependencies [[aleph "0.4.4"]
                                               [manifold "0.1.6"]]}
-             :webapi {:dependencies [[org.clojure/core.async "0.3.443"]
-                                     [com.ninjudd/eventual "0.5.0"]
+             :webapi {:dependencies [[org.clojure/core.async "0.3.465"]
+                                     [com.ninjudd/eventual "0.5.5"]
                                      [manifold "0.1.6"]
                                      [aleph "0.4.4"]
                                      [ring "1.6.3"]
