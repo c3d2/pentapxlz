@@ -8,13 +8,17 @@
                 ]
   :main ^:skip-aot pentapxlz.core
   :target-path "target/%s"
-  :profiles { :ustripe-clojure {:dependencies [[aleph "0.4.4"]
-                                               [manifold "0.1.6"]]}
-              :webapi {:dependencies [[org.clojure/core.async "0.3.443"]
-                                      [aleph "0.4.4"]
-                                      [manifold "0.1.6"]
-                                      [ring "1.6.3"]
-                                      [compojure "1.6.0"]]}
-              :recommended [:ustripe-clojure :webapi]
-              :dev [:recommended]
-              :uberjar [:recommended {:aot :all}]})
+  :profiles {:ustripe-clojure {:dependencies [[aleph "0.4.4"]
+                                              [manifold "0.1.6"]]}
+             :webapi {:dependencies [[org.clojure/core.async "0.3.443"]
+                                     [com.ninjudd/eventual "0.5.0"]
+                                     [manifold "0.1.6"]
+                                     [aleph "0.4.4"]
+                                     [ring "1.6.3"]
+                                     [metosin/ring-http-response "0.9.0"]
+                                     [compojure "1.6.0"]
+                                     [metosin/compojure-api "2.0.0-alpha12"]
+                                     [metosin/spec-tools "0.5.1"]]}
+             :recommended [:ustripe-clojure :webapi]
+             :dev [:recommended]
+             :uberjar [:recommended {:aot :all}]})
