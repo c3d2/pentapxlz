@@ -1,8 +1,9 @@
 (ns pentapxlz.config
-  (:require [aero.core :refer [read-config]]))
+  (:require [aero.core :refer [read-config]])
+  (:import (java.io File)))
 
 (defn read-configs-when-existing [files]
-  (apply merge (for [file files]
+  (apply merge (for [^File file files]
                     (if (.exists (clojure.java.io/as-file file))
                         (read-config file)))))
 

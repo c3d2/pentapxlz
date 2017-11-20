@@ -3,8 +3,8 @@
 
 (defn animate-shift! [targets timeout offset]
   (future (loop [] (doseq [target targets]
-                          (set-rgbPxlz! (let [s (get-in @pxlz [target :pxlzState])]
+                          (set-rgbPxlz! (let [s (get-in @pxlz [target :frame])]
                                              (drop (mod offset (count s))
                                                    (concat s s))) [target] false))
-                          (Thread/sleep timeout)
-                          (recur))))
+                   (Thread/sleep timeout)
+                   (recur))))

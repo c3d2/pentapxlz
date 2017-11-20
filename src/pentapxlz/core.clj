@@ -9,7 +9,7 @@
   [& args]
   (let [targets [:ledball1 :ledbeere]]
     (set-example-spiral-latitude! targets)
-    (def myRenderer (pxlz-renderer! targets 50))
+    (def myRenderer (pxlz-renderer! targets 10))
     (def myAnimation (animate-shift! targets 200 1))
     (require 'pentapxlz.webapi.core)))
 

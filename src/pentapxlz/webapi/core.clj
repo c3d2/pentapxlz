@@ -21,8 +21,8 @@
       (context "/api" []
         :tags ["api"]
         :coercion :spec
-        (put-state-handler "/pxlzstate")
-        (streaming-state-handler "/pxlzstate")
+        (put-state-handler "/frames")
+        (streaming-state-handler "/frames")
         (put-state-segments-handler "/segments")))
 
     (not-found (str "<div align=\"center\">"

@@ -16,13 +16,9 @@
   ([rgbPxlz targets] (set-rgbPxlz! rgbPxlz targets true))
   ([rgbPxlz targets needColorMapping]
    (doseq [target targets]
-     (let [pxlzState (if needColorMapping
+     (let [frame (if needColorMapping
                          (map-colors rgbPxlz target)
                          rgbPxlz)
-   
            nrPxlz (get-in @pxlz [target :nrPxlz])
-           pxlzStateLimited (take nrPxlz pxlzState)
-           pxlzStatePadding (->> (repeat black)
-                                 (take (- nrPxlz (count pxlzStateLimited))))
-           pxlzStateAligned (concat pxlzStateLimited pxlzStatePadding)]
-          (swap! pxlz #(assoc-in % [target :pxlzState] pxlzStateAligned))))))
+           wellSizedFrame (take nrPxlz (concat frame (repeat black)))]
+          (swap! pxlz #(assoc-in % [target :frame] wellSizedFrame))))))

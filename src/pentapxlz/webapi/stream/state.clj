@@ -18,12 +18,12 @@
 
 (defn streaming-state-handler [path]
   (GET path []
-    :summary "Request the current pxlzstate of a [target]"
+    :summary "Request the current frames of a [target]"
     :description (str "Commandline usage:" "<br/>"
-                      "<b>$</b> curl 'http://localhost:8080/api/pxlzstate?target=ledball1&streamevery=100&ansicolor=true'" "<br/>"
+                      "<b>$</b> curl 'http://localhost:8080/api/frames?target=ledball1&streamevery=100&ansicolor=true'" "<br/>"
                       "<br/>"
                       "On Repl you can use:" "<br/>"
-                      "<b>&gt;</b> (get-in @pentapxlz.pxlz-state/pxlz [:ledbeere :pxlzState])")
+                      "<b>&gt;</b> (get-in @pentapxlz.pxlz-state/pxlz [:ledbeere :frames])")
     :query-params [{target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz))  ;;TODO
                                        {:type :keyword
                                         :description "<b>target</b> whose state should be returned"})
@@ -38,23 +38,23 @@
     (let [streamevery_min 100
           reverseFn (if reversed reverse identity)
           body (chan)]
-          (go-loop []
-            (let [pxlzState-hostcolors (-> (get-in @pxlz [target :pxlzState])
-                                           reverseFn)
-                  pxlzState (if (or rgbcolor ansicolor)
-                                (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
-                                     (map colormapping pxlzState-hostcolors))
-                                pxlzState-hostcolors)]
-                 (if ansicolor
-                     (>! body (str (char 27) "[2J"
-                                   (join separator (apply vector (map rgb->ansi pxlzState)))
-                                   (join " " (for [_ (range padding)] "")) "\n"))
-                     (>! body (str (into [] pxlzState) "\n")))
-                 (<! (timeout (max streamevery streamevery_min))))
-            (if (> streamevery 0)
-                (recur)
-                (close! body)))
+         (go-loop []
+           (let [frame-in-hostcolors (-> (get-in @pxlz [target :frame]
+                                          reverseFn))
+                 frame (if (or rgbcolor ansicolor
+                               (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
+                                    (map colormapping frame-in-hostcolors))
+                               frame-in-hostcolors))]
+                (if ansicolor
+                    (>! body (str (char 27) "[2J"
+                                  (join separator (apply vector (map rgb->ansi frame)))
+                                  (join " " (for [_ (range padding)] "")) "\n"))
+                    (>! body (str (into [] frame) "\n")))
+                (<! (timeout (max streamevery streamevery_min))))
+           (if (> streamevery 0)
+               (recur)
+               (close! body)))
       
-          {:status 200
-           :headers {"content-type" "text/event-stream"}
-           :body (->source body)})))
+         {:status 200
+          :headers {"content-type" "text/event-stream"}
+          :body (->source body)})))
