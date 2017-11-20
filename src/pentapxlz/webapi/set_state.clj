@@ -41,14 +41,14 @@
                       "<br/>"
                       "On Repl you can use:" "<br/>"
                       "<b>&gt;</b> (set-rgbPxlz! (looped (segments [[1 blue] [10 yellow]])) [:ledbeere])")
-    :query-params [target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz))  ;;TODO
-                                      {:type :keyword
+    :query-params [target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz)) ;;TODO
+                                      {:type        :keyword
                                        :description "<b>target</b> whose state should be updated"})
                    looped :- (st/spec boolean? {:description "In case <b>frame</b> is shorter than the length of <b>target</b>, should the <b>frame</b> be <b>looped</b>?"})]
     :body [nr+colors (st/spec ::segments {:description "A vector of segments (vector of nr and color)"})]
     :return boolean?
     (let [nr+colors-looped (if looped
-                               (seg/looped nr+colors)
-                               nr+colors)]
-         (set-rgbPxlz! (seg/segments nr+colors-looped) [target]))
+                             (seg/looped nr+colors)
+                             nr+colors)]
+      (set-rgbPxlz! (seg/segments nr+colors-looped) [target]))
     (ok true)))

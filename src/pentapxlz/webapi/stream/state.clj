@@ -39,12 +39,12 @@
           reverseFn (if reversed reverse identity)
           body (chan)]
          (go-loop []
-           (let [frame-in-hostcolors (-> (get-in @pxlz [target :frame]
-                                          reverseFn))
-                 frame (if (or rgbcolor ansicolor
-                               (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
-                                    (map colormapping frame-in-hostcolors))
-                               frame-in-hostcolors))]
+           (let [frame-in-hostcolors (-> (get-in @pxlz [target :frame])
+                                         reverseFn)
+                 frame (if (or rgbcolor ansicolor)
+                           (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
+                                (map colormapping frame-in-hostcolors))
+                           frame-in-hostcolors)]
                 (if ansicolor
                     (>! body (str (char 27) "[2J"
                                   (join separator (apply vector (map rgb->ansi frame)))
