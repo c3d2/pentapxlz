@@ -3,6 +3,7 @@
             [compojure.core :refer [routes]]
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
+            [pentapxlz.config :refer [config]]
             [pentapxlz.webapi.stream.state :refer [streaming-state-handler]]
             [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]))
 
@@ -31,8 +32,8 @@
 
 (defn server-start []
   (http/start-server app {:raw-stream? false  ;; otherwise problems with PUT/POST
-                          :host "0.0.0.0"
-                          :port 8080}))
+                          :host (get-in config [:webserver :host])
+                          :port (get-in config [:webserver :port])}))
 
 (defonce server (server-start))
 

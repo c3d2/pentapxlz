@@ -5,7 +5,8 @@
             [manifold.stream :refer [->source]]
             [clojure.core.async :as a :refer [chan >! <! close! timeout go go-loop]]
             [pentapxlz.pxlz-state :refer [pxlz]]
-            [clojure.string :refer [join]]))
+            [clojure.string :refer [join]]
+            [pentapxlz.colors :refer [colormapX+colormapY->colorX->colorY]]))
 
 (defn rgb->ansi [rgb]
   (let [ansicolor (+ (if-not (= 0 (nth rgb 0)) 1 0)
@@ -41,13 +42,14 @@
             (let [pxlzState-hostcolors (-> (get-in @pxlz [target :pxlzState])
                                            reverseFn)
                   pxlzState (if (or rgbcolor ansicolor)
-                                (map #(apply (get-in @pxlz [target :colors-inverse]) %) pxlzState-hostcolors)
+                                (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
+                                     (map colormapping pxlzState-hostcolors))
                                 pxlzState-hostcolors)]
                  (if ansicolor
                      (>! body (str (char 27) "[2J"
                                    (join separator (apply vector (map rgb->ansi pxlzState)))
                                    (join " " (for [_ (range padding)] "")) "\n"))
-                     (>! body (str (apply vector pxlzState) "\n")))
+                     (>! body (str (into [] pxlzState) "\n")))
                  (<! (timeout (max streamevery streamevery_min))))
             (if (> streamevery 0)
                 (recur)

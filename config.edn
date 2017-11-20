@@ -1,0 +1,16 @@
+{:pxlz {:ledbeere {:nrPxlz 226
+                   :colors [:b :g :r]
+                   :brightMax 0xff
+                   :ustripe {:host "ledbeere.hq.c3d2.de"
+                             :port 2342
+                             :prio 0x23}}
+        :ledball1 {:nrPxlz 640
+                   :colors [:r :b :g]
+                   :brightMax 0xaa
+                   :geometry {:spiral [48, 59, 70, 75, 80, 71, 61, 57, 42, 37, 26, 17, 31]}
+                   :ustripe {:host "ledball1.hq.c3d2.de"
+                             :port 2342
+                             :prio 0x23}}}
+ :webserver {:host "localhost"
+             :port 8080}}
+

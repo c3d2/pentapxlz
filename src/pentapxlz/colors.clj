@@ -17,16 +17,21 @@
 (def yellow  [0xff 0xff 0x00])
 (def white   [0xff 0xff 0xff])
 
+(defn colormapX+colormapY->colorX->colorY [colormapX colormapY]
+  (let [colorDictY (zipmap colormapY (range 3))
+        idxs (into [] (map colorDictY colormapX))]
+       (fn [colorX] (mapv colorX idxs))))
 
 (defn normalize-hysteresis
   "Normalize all items in case sum>maximum.
    Maximum should be > 1"
   [items maximum]
-  (let [sum (apply + items)]
-       (if (<= sum maximum)
+  (let [maximumsum (* 3 maximum)
+        sum (apply + items)]
+       (if (<= sum maximumsum)
            items
            (map #(-> %
-                     (* (min sum maximum))
+                     (* (min sum maximumsum))
                      (/ sum)
                      int)
                 items))))

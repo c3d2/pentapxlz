@@ -3,6 +3,7 @@
    For ustriped see: https://github.com/astro/pile/tree/master/ustriped"
   (:gen-class)
   (:require [pentapxlz.pxlz-state :refer [pxlz]]
+            [pentapxlz.config :refer [config]]
             [aleph.udp :as udp]
             [manifold.stream :refer [put! close!]]
             [clojure.pprint :refer [pprint]]))
@@ -12,7 +13,7 @@
         msg (->> (get-in @pxlz [target :pxlzState])
                  (apply concat)
                  (map unchecked-byte))
-        header [(byte 0x00)  ;; prio
+        header [(byte (get-in config [:pxlz target :ustripe :prio]))
                 (byte 0x00)  ;; command
                 (unchecked-byte (bit-shift-right (count msg) 8)) ;; 1st byte length
                 (unchecked-byte (bit-and 0xff (count msg)))      ;; 2nd byte length
