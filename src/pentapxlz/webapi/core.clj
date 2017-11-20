@@ -4,7 +4,7 @@
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
             [pentapxlz.webapi.stream.state :refer [streaming-state-handler]]
-            [pentapxlz.webapi.set-state :refer [put-state-handler]]))
+            [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]))
 
 (def app
   (routes
@@ -21,8 +21,9 @@
         :tags ["api"]
         :coercion :spec
         (put-state-handler "/pxlzstate")
-        (streaming-state-handler "/pxlzstate")))
-        
+        (streaming-state-handler "/pxlzstate")
+        (put-state-segments-handler "/segments")))
+
     (not-found (str "<div align=\"center\">"
                     "No such page, but you can use the" "<br/>"
                     "&lt;&lt;&lt; " "<a href=\"/api\">pentaPxlz API Documentation</a>" " /&gt;&gt;"

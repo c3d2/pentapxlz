@@ -22,7 +22,7 @@
                       "<b>$</b> curl 'http://localhost:8080/api/pxlzstate?target=ledball1&streamevery=100&ansicolor=true'" "<br/>"
                       "<br/>"
                       "On Repl you can use:" "<br/>"
-                      "<b>&gt;</b> (get-in @pentapxlz.pxlz-state/pxlz [<b>target</b> :pxlzState])")
+                      "<b>&gt;</b> (get-in @pentapxlz.pxlz-state/pxlz [:ledbeere :pxlzState])")
     :query-params [{target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz))  ;;TODO
                                        {:type :keyword
                                         :description "<b>target</b> whose state should be returned"})

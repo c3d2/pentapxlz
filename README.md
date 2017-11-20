@@ -4,8 +4,15 @@ A clojure library to control led-stripes (and other pixels)
 
 ## Installation
 
-* Just install [Leiningen](https://leiningen.org/#install)
-* git clone https://github.com/c3d2/pentapxlz.git
+* Install a current Java
+    $ sudo apt install openjdk-8-jre-headless
+
+* Install [Leiningen](https://leiningen.org/#install)
+    $ sudo wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -O /usr/local/bin/lein 
+    $ sudo chmod +x /usr/local/bin/lein
+
+* Clone pentapxlz
+    $ git clone https://github.com/c3d2/pentapxlz.git
 
 ## Usage
 
