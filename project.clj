@@ -21,5 +21,5 @@
                                      [metosin/compojure-api "2.0.0-alpha12"]
                                      [metosin/spec-tools "0.5.1"]]}
              :recommended [:ustripe-clojure :webapi]
-             :dev [:recommended]
+             :dev [:recommended {:dependencies [[criterium "0.4.4"]]}]
              :uberjar [:recommended {:aot :all}]})

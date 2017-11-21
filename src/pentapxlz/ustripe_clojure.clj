@@ -7,10 +7,16 @@
             [manifold.stream :refer [put! close!]]
             [clojure.pprint :refer [pprint]]))
 
+(defn- concat-pixels [pixels]
+  (reduce (fn [result [r g b]]
+            (conj result r g b))
+          []
+          pixels))
+
 (defn pxlz-send! [target]
   (let [client-socket @(udp/socket {})
         msg (->> (get-in @pxlz [target :frame])
-                 (apply concat)
+                 (concat-pixels)
                  (map unchecked-byte))
         header [(byte (get-in @pxlz [target :ustripe :prio]))
                 (byte 0x00)  ;; command
