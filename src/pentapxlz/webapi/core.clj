@@ -4,12 +4,12 @@
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
             [pentapxlz.config :refer [config]]
-            [pentapxlz.webapi.stream.state :refer [streaming-state-handler]]
-            [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]))
+            [pentapxlz.webapi.stream.state :refer [streaming-state-handler streaming-atom-state-handler]]
+            [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]
+            [taoensso.timbre :as t]))
 
-(def app
+(defn create-app []
   (routes
-
     (api
       {:swagger
         {:ui "/api"
@@ -23,21 +23,26 @@
         :coercion :spec
         (put-state-handler "/frames")
         (streaming-state-handler "/frames")
-        (put-state-segments-handler "/segments")))
+        (put-state-segments-handler "/segments")
+        (streaming-atom-state-handler "/frames2")))
 
     (not-found (str "<div align=\"center\">"
                     "No such page, but you can use the" "<br/>"
                     "&lt;&lt;&lt; " "<a href=\"/api\">pentaPxlz API Documentation</a>" " /&gt;&gt;"
                     "</div>"))))
 
-(defn server-start []
-  (http/start-server app {:raw-stream? false  ;; otherwise problems with PUT/POST
-                          :host (get-in config [:webserver :host])
-                          :port (get-in config [:webserver :port])}))
+(defonce server (atom nil))
 
-(defonce server (server-start))
+(defn server-start []
+  (if @server
+    (t/info "Server already running.")
+    (reset! server
+            (http/start-server (create-app)
+                               {:raw-stream? false      ;; otherwise problems with PUT/POST
+                                :host        (get-in config [:webserver :host])
+                                :port        (get-in config [:webserver :port])}))))
 
 (defn server-restart []
-  (if-let [s (resolve 'server)]
-    (.close server))
-  (def server (server-start)))
+  (if-let [s @server]
+    (.close s))
+  (server-start))
