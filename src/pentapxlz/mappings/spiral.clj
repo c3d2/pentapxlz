@@ -17,8 +17,8 @@
 
 (defn set-example-spiral-longitude! [targets]
   (let [spiralsegments (-> (get-in @pxlz [(first targets) :geometry :spiral])
-                            bisect-segments
-                            bisect-segments)]
+                           bisect-segments
+                           bisect-segments)]
        (set-rgbPxlz! (segments (interleave (looped [[1 red] [1 green] [1 yellow] [1 green]])
                                            (map #(vector (dec %) [1 1 1]) spiralsegments)))
                      targets)))

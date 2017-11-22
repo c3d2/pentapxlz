@@ -17,7 +17,8 @@
   {:pre [(:start-fn process-map)]}
   (if (@registry key)
     (throw (ex-info (str key " is already registered.") {:registered-process process-map}))
-    (swap! registry assoc key process-map)))
+    (do (swap! registry assoc key process-map)
+        (t/infof "Registered process %s" key))))
 
 (defn start! [key]
   (if-let [process (@registry key)]
@@ -25,10 +26,10 @@
       (throw (ex-info (str "Process " key " already started.") {:strated-process process}))
       (let [started-process (assoc ((:start-fn process) process)
                               ::started true)]
-        (t/debugf "Started process %s" key)
         (if (not (:stop-fn started-process))
           (t/warnf "Process %s returned no stop-fn. It might be running but cannot be stopped." key))
-        (swap! registry assoc key started-process)))
+        (swap! registry assoc key started-process)
+        (t/infof "Started process %s" key)))
     (throw-not-registered key)))
 
 (defn stop! [key]
@@ -36,8 +37,8 @@
     (if-let [stop-fn (:stop-fn process)]
       (let [stopped-process (dissoc (stop-fn process)
                                     ::started)]
-        (t/debugf "Stopped process %s" key)
-        (swap! registry assoc key stopped-process))
+        (swap! registry assoc key stopped-process)
+        (t/infof "Stopped process %s" key))
       (throw (ex-info (str key " as no stop-fn. Cannot be stopped.") {:unstoppable-process process})))
     (throw-not-registered key)))
 
@@ -48,11 +49,12 @@
     (do
       (cond (and (::started process) (:stop-fn process))
             (do (t/warnf "Registered process %s was started. Stopping it.")
-                ((:stop-fn process) process))
+                (stop! key))
 
             (::started process)
             (t/warnf "Registered process %s was started but has no stop-fn."))
-      (swap! registry dissoc key))
+      (swap! registry dissoc key)
+      (t/infof "Unregistered process %s" key))
     (throw-not-registered key)))
 
 (defn register-and-start [key process-map]
