@@ -9,7 +9,7 @@
                 (drop (mod offset (count s))
                       (concat s s))))))
 
-(defn shift-animator [{:keys [framerate state-atom offset] :as opts}]
+(defn shift-animator [{:keys [framerate state offset] :as opts}]
   (common/timed-future-step-animator
     (assoc opts
       :step-fn (shift-fn offset))))

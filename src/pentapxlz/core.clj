@@ -9,7 +9,7 @@
             [pentapxlz.animators.shift :as ashift]
             [pentapxlz.renderer.quil]
             [pentapxlz.renderer.ustripe]
-            [pentapxlz.config :refer [config]]
+            [pentapxlz.config :refer [config reload-config]]
             [pentapxlz.processes.registry :as pr]
             [pentapxlz.processes.resolve :refer [resolve-process]]
             [pentapxlz.processes.atom-registry :as ar]
@@ -26,15 +26,24 @@
     (def myAnimation-shift (animate-shift! [:ledbeere] 200 1))
     (server-start)))
 
+(defn restart-processes!
+  "Reloads the config and restarts all running and autostarted processes"
+  []
+  (let [started (into #{} (pr/ls-started))]
+    (pr/unregister-all!)
+    (let [config (reload-config)
+          processes (:processes config {})
+          auto-start (:processes/auto-start config {})]
+      (doseq [[k process-map] processes]
+        (pr/register k (resolve-process process-map)))
+      (apply pr/start! (into started auto-start)))))
+
 (defn -main2 [& args]
-  (let [processes (:processes config {})
-        auto-start (:processes/auto-start config {})]
-    #_(reset! (ar/resolve-atom :state/ledbeere) (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20]))
-    (reset! (ar/resolve-atom :state/ledbeere) (interleave (repeat 50 :blue)
-                                                          (repeat 50 :yellow)
-                                                          (repeat 50 :green)))
-    (doseq [[k process-map] processes]
-      (pr/register k (resolve-process process-map)))
-    (apply pr/start! auto-start)
-    (server-start)))
+  (reset! (ar/resolve-atom :state/ledball1) (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20]))
+  (reset! (ar/resolve-atom :state/ledbeere) (interleave (repeat 50 :blue)
+                                                        (repeat 50 :yellow)
+                                                        (repeat 50 :green)
+                                                        (repeat 50 :red)))
+  (restart-processes!)
+  (server-start))
 

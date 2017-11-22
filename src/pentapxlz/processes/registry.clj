@@ -86,7 +86,7 @@
     (if (not (::started (@registry k)))
       (start! k))))
 
-(defn resart-all! []
+(defn restart-all! []
   (stop-all!)
   (start-all!))
 
@@ -97,3 +97,10 @@
 (defn restart! [& keys]
   (apply stop! keys)
   (apply start! keys))
+
+(defn ls []
+  (keys @registry))
+
+(defn ls-started []
+  (map first (filter (fn [k v] (::started v))
+                     @registry)))

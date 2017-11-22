@@ -14,6 +14,9 @@
 
 (def homedir (System/getProperty "user.home"))
 
-(def config (read-configs-when-existing ["config.edn"
-                                         "/etc/pentapxlz/config.edn"
-                                         (str homedir "/.pentapxlz/config.edn")]))
+(defn reload-config []
+  (read-configs-when-existing ["config.edn"
+                               "/etc/pentapxlz/config.edn"
+                               (str homedir "/.pentapxlz/config.edn")]))
+
+(def config (reload-config))

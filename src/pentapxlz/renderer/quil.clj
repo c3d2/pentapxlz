@@ -2,7 +2,8 @@
   (:require [quil.core :as q]
             [quil.middleware :as m]
             [pentapxlz.processes.resolve :as r]
-            [pentapxlz.colors :as c]))
+            [pentapxlz.colors :as c]
+            [pentapxlz.processes.atom-registry :as ar]))
 
 (def window-size 1000)
 (def base-size 25)
@@ -43,12 +44,12 @@
 (defn frame-renderer-update-fn [frame-atom]
   frame-atom)
 
-(defn opts->frame-setup-fn [{:keys [framerate frame-atom]}]
+(defn opts->frame-setup-fn [{:keys [framerate state]}]
   (fn []
     (q/frame-rate framerate)
-    frame-atom))
+    (ar/resolve-atom state)))
 
-(defn- start-quil-frame-renderer [{:keys [framerate frame-atom] :as opts}]
+(defn- start-quil-frame-renderer [{:keys [framerate state] :as opts}]
   (let [sketch
         (q/sketch
           :title "Pixels!"
@@ -74,11 +75,11 @@
 
 ;---------------- quil animation renderer -----------------------
 
-(defn- opts->animation-setup-fn [{:keys [framerate animation-atom]}]
+(defn- opts->animation-setup-fn [{:keys [framerate state]}]
   (fn []
     (q/frame-rate framerate)
     {:current-frame 0
-     :animation animation-atom}))
+     :animation (ar/resolve-atom state)}))
 
 (defn animation-renderer-update-fn [current]
   (update current :current-frame #(mod (inc %) (count @(:animation current)))))
@@ -86,7 +87,7 @@
 (defn animation-renderer-draw-fn [{:keys [current-frame animation]}]
   (draw-frame (get @animation current-frame [])))
 
-(defn- start-quil-animation-renderer [{:keys [framerate animation-atom] :as opts}]
+(defn- start-quil-animation-renderer [{:keys [framerate state] :as opts}]
   (let [sketch
         (q/sketch
           :title "Pixels!"

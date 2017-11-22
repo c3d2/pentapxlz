@@ -3,7 +3,8 @@
             [manifold.stream :as mf]
             [clojure.core.async :refer [go-loop timeout <! >!] :as async]
             [pentapxlz.colors :as c]
-            [pentapxlz.processes.resolve :as r]))
+            [pentapxlz.processes.resolve :as r]
+            [pentapxlz.processes.atom-registry :as ar]))
 
 (defn- concat-pixels-transducer [xf]
   (fn
@@ -43,9 +44,10 @@
   (long (max (quot 1000 framerate) 1)))
 
 (defn- start-ustripe-renderer
-  [{:keys [host port prio framerate frame-atom bright-max color-map pixel-count]}]
+  [{:keys [host port prio framerate state bright-max color-map pixel-count]}]
   (let [timeout-duration (timeout-in-ms framerate)
-        message-builder (partial build-message prio bright-max color-map)
+        message-builder (partial build-message prio bright-max color-map pixel-count)
+        frame-atom (ar/resolve-atom state)
         socket @(udp/socket {})
         control-chan (async/chan)
         result-chan
