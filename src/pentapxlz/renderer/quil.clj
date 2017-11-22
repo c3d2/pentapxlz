@@ -43,7 +43,7 @@
 (defn frame-renderer-update-fn [frame-atom]
   frame-atom)
 
-(defn opts->setup-fn [{:keys [framerate frame-atom]}]
+(defn opts->frame-setup-fn [{:keys [framerate frame-atom]}]
   (fn []
     (q/frame-rate framerate)
     frame-atom))
@@ -54,7 +54,7 @@
           :title "Pixels!"
           :host "quil-view"
           :settings #(q/smooth 2)
-          :setup (opts->setup-fn opts)
+          :setup (opts->frame-setup-fn opts)
           :update frame-renderer-update-fn
           :draw frame-renderer-draw-fn
           :middleware [m/fun-mode]
@@ -70,4 +70,42 @@
               (dissoc this :sketch))})
 
 (defmethod r/resolve-process
-  :renderer/quil [opts] (quil-frame-renderer opts))
+  :renderer/quil-frame [opts] (quil-frame-renderer opts))
+
+;---------------- quil animation renderer -----------------------
+
+(defn- opts->animation-setup-fn [{:keys [framerate animation-atom]}]
+  (fn []
+    (q/frame-rate framerate)
+    {:current-frame 0
+     :animation animation-atom}))
+
+(defn animation-renderer-update-fn [current]
+  (update current :current-frame #(mod (inc %) (count @(:animation current)))))
+
+(defn animation-renderer-draw-fn [{:keys [current-frame animation]}]
+  (draw-frame (get @animation current-frame [])))
+
+(defn- start-quil-animation-renderer [{:keys [framerate animation-atom] :as opts}]
+  (let [sketch
+        (q/sketch
+          :title "Pixels!"
+          :host "quil-view"
+          :settings #(q/smooth 2)
+          :setup (opts->animation-setup-fn opts)
+          :update animation-renderer-update-fn
+          :draw animation-renderer-draw-fn
+          :middleware [m/fun-mode]
+          :size [window-size window-size])]
+    {:sketch sketch}))
+
+(defn quil-animation-renderer [opts]
+  {:opts opts
+   :start-fn (fn [this]
+               (merge this (start-quil-animation-renderer opts)))
+   :stop-fn (fn [this]
+              (.exit (:sketch this))
+              (dissoc this :sketch))})
+
+(defmethod r/resolve-process
+  :renderer/quil-animation [opts] (quil-animation-renderer opts))

@@ -34,7 +34,7 @@
                                  :prio 0x23
                                  :framerate 20
                                  :frame-sate #atom :state/ledball1}
-             :renderer/quil     {:type :renderer/quil
+             :renderer/quil     {:type :renderer/quil-frame
                                  :framerate 30
                                  :frame-atom #atom :state/ledbeere}
              :animator/shift    {:type :animator/shift
