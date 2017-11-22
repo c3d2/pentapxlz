@@ -82,7 +82,7 @@
      :animation (ar/resolve-atom state)}))
 
 (defn animation-renderer-update-fn [current]
-  (update current :current-frame #(mod (inc %) (count @(:animation current)))))
+  (update current :current-frame #(mod (inc %) (max (count @(:animation current)) 1))))
 
 (defn animation-renderer-draw-fn [{:keys [current-frame animation]}]
   (draw-frame (get @animation current-frame [])))

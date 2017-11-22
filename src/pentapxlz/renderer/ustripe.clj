@@ -40,28 +40,37 @@
                              :message message})]
     @send-success?))
 
+(defn- start-frame-loop [host port socket
+                         control-chan message-builder timeout-duration
+                         frame-atom]
+  (go-loop []
+    (let [timeout-chan (timeout timeout-duration)
+          message (message-builder @frame-atom)]
+      (send-message! host port socket message)
+      (<! timeout-chan)
+      (let [[command source] (async/alts! [control-chan] :default ::none)]
+        (if (not= ::exit command)
+          (recur))))))
+
+
 (defn- timeout-in-ms [framerate]
   (long (max (quot 1000 framerate) 1)))
 
-(defn- start-ustripe-renderer
-  [{:keys [host port prio framerate state bright-max color-map pixel-count]}]
-  (let [timeout-duration (timeout-in-ms framerate)
-        message-builder (partial build-message prio bright-max color-map pixel-count)
-        frame-atom (ar/resolve-atom state)
-        socket @(udp/socket {})
-        control-chan (async/chan)
-        result-chan
-        (go-loop []
-          (let [timeout-chan (timeout timeout-duration)
-                message (message-builder @frame-atom)]
-            (send-message! host port socket message)
-            (<! timeout-chan)
-            (let [[command source] (async/alts! [control-chan] :default ::none)]
-              (if (not= ::exit command)
-                (recur)))))]
-    {:socket socket
-     :result-chan result-chan
-     :control-chan control-chan}))
+(defn- build-ustripe-renderer-fn [loop-fn]
+  (fn
+    [{:keys [host port prio framerate state bright-max color-map pixel-count]}]
+    (let [timeout-duration (timeout-in-ms framerate)
+          message-builder (partial build-message prio bright-max color-map pixel-count)
+          frame-atom (ar/resolve-atom state)
+          socket @(udp/socket {})
+          control-chan (async/chan)
+          result-chan (loop-fn host port socket control-chan message-builder timeout-duration frame-atom)]
+      {:socket       socket
+       :result-chan  result-chan
+       :control-chan control-chan})))
+
+(def start-ustripe-frame-renderer
+  (build-ustripe-renderer-fn start-frame-loop))
 
 (defn- stop-ustripe-renderer!
   [{:keys [socket control-chan]}]
@@ -73,7 +82,7 @@
   {:opts opts
    :start-fn (fn [{:keys [opts] :as this}]
                (-> this
-                   (merge (start-ustripe-renderer opts))
+                   (merge (start-ustripe-frame-renderer opts))
                    (assoc :stop-fn
                           (fn [this]
                             (stop-ustripe-renderer! this)
@@ -81,3 +90,32 @@
 
 (defmethod r/resolve-process
   :renderer/ustripe-frame [opts] (ustripe-frame-renderer opts))
+
+;;------------ ustripe-animation-renderer
+(defn- start-animation-loop [host port socket
+                             control-chan message-builder timeout-duration
+                             animation-atom]
+  (go-loop [current-index 0]
+    (let [timeout-chan (timeout timeout-duration)
+          message (message-builder (get @animation-atom current-index []))]
+      (send-message! host port socket message)
+      (<! timeout-chan)
+      (let [[command source] (async/alts! [control-chan] :default ::none)]
+        (if (not= ::exit command)
+          (recur (mod (inc current-index) (max (count @animation-atom) 1))))))))
+
+(def start-ustripe-animation-renderer
+  (build-ustripe-renderer-fn start-animation-loop))
+
+(defn ustripe-animation-renderer [opts]
+  {:opts opts
+   :start-fn (fn [{:keys [opts] :as this}]
+               (-> this
+                   (merge (start-ustripe-animation-renderer opts))
+                   (assoc :stop-fn
+                          (fn [this]
+                            (stop-ustripe-renderer! this)
+                            (dissoc this :stop-fn)))))})
+
+(defmethod r/resolve-process
+  :renderer/ustripe-animation [opts] (ustripe-animation-renderer opts))

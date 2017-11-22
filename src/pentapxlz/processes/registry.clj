@@ -102,5 +102,5 @@
   (keys @registry))
 
 (defn ls-started []
-  (map first (filter (fn [k v] (::started v))
+  (map first (filter (fn [[k v]] (::started v))
                      @registry)))

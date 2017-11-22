@@ -44,6 +44,8 @@
                                                         (repeat 50 :yellow)
                                                         (repeat 50 :green)
                                                         (repeat 50 :red)))
+  (reset! (ar/resolve-atom :state/ledball1-animation)
+          (ashift/full-shift-animation (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20])))
   (restart-processes!)
   (server-start))
 

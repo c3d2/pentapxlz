@@ -16,7 +16,7 @@
  :webserver {:host "localhost"
              :public-hostname "ustriper.hq.c3d2.de"
              :port 8080}
- :processes {:renderer/ledbeere {:type :renderer/ustripe-frame
+ :processes {:renderer/ledbeere {:type :renderer/ustripe-animation
                                  :pixel-count 226
                                  :color-map [:b :g :r]
                                  :bright-max 0xff
@@ -24,19 +24,19 @@
                                  :port 2342
                                  :prio 0x23
                                  :framerate 20
-                                 :state :state/ledbeere}
-             :renderer/ledball1 {:type :renderer/ustripe-frame
+                                 :state :state/ledbeere-animation}
+             :renderer/ledball1 {:type :renderer/ustripe-animation
                                  :pixel-count 640
-                                 :color-map [:b :g :r]
+                                 :color-map [:r :b :g]
                                  :bright-max 0xaa
                                  :host "ledball1.hq.c3d2.de"
                                  :port 2342
                                  :prio 0x23
                                  :framerate 30
-                                 :state :state/ledball1}
-             :renderer/quil     {:type :renderer/quil-frame
+                                 :state :state/ledball1-animation}
+             :renderer/quil     {:type :renderer/quil-animation
                                  :framerate 30
-                                 :state :state/ledball1}
+                                 :state :state/ledball1-animation}
              :animator/shift    {:type :animator/shift
                                  :state :state/ledbeere
                                  :offset 1
@@ -45,6 +45,6 @@
                                    :state :state/ledball1
                                    :offset 1
                                    :framerate 30}}
- :processes/auto-start [:renderer/quil :animator/shift]}
+ :processes/auto-start [:renderer/quil]}
 
 
