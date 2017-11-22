@@ -86,6 +86,14 @@
     (if (not (::started (@registry k)))
       (start! k))))
 
+(defn resart-all! []
+  (stop-all!)
+  (start-all!))
+
 (defn unregister-all! []
   (doseq [k (keys @registry)]
     (unregister k)))
+
+(defn restart! [& keys]
+  (apply stop! keys)
+  (apply start! keys))

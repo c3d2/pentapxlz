@@ -28,7 +28,10 @@
 (defn -main2 [& args]
   (let [processes (:processes config {})
         auto-start (:processes/auto-start config {})]
-    (reset! (ar/resolve-atom :state/ledbeere) (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20]))
+    #_(reset! (ar/resolve-atom :state/ledbeere) (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20]))
+    (reset! (ar/resolve-atom :state/ledbeere) (interleave (repeat 50 :blue)
+                                                          (repeat 50 :yellow)
+                                                          (repeat 50 :green)))
     (doseq [[k process-map] processes]
       (pr/register k (resolve-process process-map)))
     (apply pr/start! auto-start)))

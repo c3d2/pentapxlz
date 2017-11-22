@@ -1,7 +1,8 @@
 (ns pentapxlz.renderer.quil
   (:require [quil.core :as q]
             [quil.middleware :as m]
-            [pentapxlz.processes.resolve :as r]))
+            [pentapxlz.processes.resolve :as r]
+            [pentapxlz.colors :as c]))
 
 (def window-size 1000)
 (def base-size 25)
@@ -19,7 +20,7 @@
          :grid-y (quot index pixel-per-row)}))
 
 (defn draw-pixel [{:keys [abs-x abs-y pixel]}]
-  (apply q/fill pixel)
+  (apply q/fill (c/->rgb pixel))
   (q/rect abs-x abs-y base-size base-size))
 
 (defn pixels->pixel-maps [pixels]

@@ -17,6 +17,7 @@
   (into []
     (comp
       (take pixel-count)
+      (map c/->rgb)
       (map (c/colormapX+colormapY->colorX->colorY [:r :g :b] color-map))
       (map #(c/normalize-hysteresis % bright-max))
       concat-pixels-transducer
