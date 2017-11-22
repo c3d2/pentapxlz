@@ -1,6 +1,11 @@
 (ns pentapxlz.config
-  (:require [aero.core :refer [read-config]])
+  (:require [aero.core :refer [read-config]]
+            [pentapxlz.processes.atom-registry :as ar])
   (:import (java.io File)))
+
+(defmethod aero.core/reader 'atom
+  [_ _ value]
+  (ar/resolve-atom value))
 
 (defn read-configs-when-existing [files]
   (apply merge (for [^File file files]

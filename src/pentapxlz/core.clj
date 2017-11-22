@@ -7,8 +7,13 @@
             [pentapxlz.animations.shift :refer [animate-shift!]]
             [pentapxlz.animations.spin :refer [animate-spin!]]
             [pentapxlz.animators.shift :as ashift]
-            [pentapxlz.renderer.quil :as qr]
-            [pentapxlz.registry :as r]))
+            [pentapxlz.renderer.quil]
+            [pentapxlz.renderer.ustripe]
+            [pentapxlz.config :refer [config]]
+            [pentapxlz.processes.registry :as pr]
+            [pentapxlz.processes.resolve :refer [resolve-process]]
+            [pentapxlz.processes.atom-registry :as ar]
+            [pentapxlz.examples :as examples]))
 
 (defn -main
   [& args]
@@ -21,9 +26,10 @@
     (require 'pentapxlz.webapi.core)))
 
 (defn -main2 [& args]
-  (let [frame-atom (atom [[255 0 0] [0 255 0] [0 0 255]])
-        quil-renderer (qr/quil-frame-renderer {:frame-atom frame-atom :framerate 60})
-        shift-animator (ashift/shift-animator {:framerate 1 :state-atom frame-atom :offset 1})]
-    (r/register :animator/shift shift-animator)
-    (r/register :renderer/quil quil-renderer)))
+  (let [processes (:processes config {})
+        auto-start (:processes/auto-start config {})]
+    (reset! (ar/resolve-atom :state/ledbeere) (examples/spiral [48 59 69 73 75 71 65 56 46 36 26 20]))
+    (doseq [[k process-map] processes]
+      (pr/register k (resolve-process process-map)))
+    (apply pr/start! auto-start)))
 

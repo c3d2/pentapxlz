@@ -1,6 +1,7 @@
 (ns pentapxlz.renderer.quil
   (:require [quil.core :as q]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [pentapxlz.processes.resolve :as r]))
 
 (def window-size 1000)
 (def base-size 25)
@@ -66,3 +67,6 @@
    :stop-fn (fn [this]
               (.exit (:sketch this))
               (dissoc this :sketch))})
+
+(defmethod r/resolve-process
+  :renderer/quil [opts] (quil-frame-renderer opts))

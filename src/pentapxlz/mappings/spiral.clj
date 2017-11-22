@@ -1,5 +1,6 @@
 (ns pentapxlz.mappings.spiral
   (:require [pentapxlz.pxlz-state :refer [pxlz set-rgbPxlz!]]
+            [pentapxlz.examples :as examples]
             [pentapxlz.colors :refer :all]
             [pentapxlz.mappings.segments :refer [segments looped zipvector]]))
 
@@ -9,10 +10,7 @@
        (interleave segments-quot2 segments-rest)))
 
 (defn set-example-spiral-longitude-segments! [targets]
-  (set-rgbPxlz! (segments (zipvector (-> (get-in @pxlz [(first targets) :geometry :spiral])
-                                         bisect-segments
-                                         bisect-segments)
-                                     (looped [red blue yellow green])))
+  (set-rgbPxlz! (examples/spiral (get-in @pxlz [(first targets) :geometry :spiral]))
                 targets))
 
 (defn set-example-spiral-longitude! [targets]

@@ -15,4 +15,32 @@
                              :prio 0x23}}}
  :webserver {:host "localhost"
              :public-hostname "ustriper.hq.c3d2.de"
-             :port 8080}}
+             :port 8080}
+ :processes {:renderer/ledbeere {:type :renderer/ustripe-frame
+                                 :pixel-count 226
+                                 :color-map [:b :g :r]
+                                 :bright-max 0xff
+                                 :host "ledbeere.hq.c3d2.de"
+                                 :port 2342
+                                 :prio 0x23
+                                 :framerate 20
+                                 :frame-state #atom :state/ledbeere}
+             :renderer/ledball1 {:type :renderer/ustripe-frame
+                                 :pixel-count 640
+                                 :color-map [:b :g :r]
+                                 :bright-max 0xaa
+                                 :host "ledball1.hq.c3d2.de"
+                                 :port 2342
+                                 :prio 0x23
+                                 :framerate 20
+                                 :frame-sate #atom :state/ledball1}
+             :renderer/quil     {:type :renderer/quil
+                                 :framerate 30
+                                 :frame-atom #atom :state/ledbeere}
+             :animator/shift    {:type :animator/shift
+                                 :state-atom #atom :state/ledbeere
+                                 :offset 1
+                                 :framerate 1}}
+ :processes/auto-start [:renderer/quil :animator/shift]}
+
+

@@ -1,4 +1,4 @@
-(ns pentapxlz.registry
+(ns pentapxlz.processes.registry
   (:require [taoensso.timbre :as t]))
 
 ;namespace to start and stop processes like renderers.
@@ -13,14 +13,18 @@
 (defn- throw-not-registered [key]
   (throw (ex-info (str key " is not registered.") {:registered-keys (keys @registry)})))
 
-(defn register [key process-map]
-  {:pre [(:start-fn process-map)]}
-  (if (@registry key)
-    (throw (ex-info (str key " is already registered.") {:registered-process process-map}))
-    (do (swap! registry assoc key process-map)
-        (t/infof "Registered process %s" key))))
+(defn register
+  ([key->process-map]
+   (doseq [[k process-map] key->process-map]
+     (register k process-map)))
+  ([key process-map]
+   {:pre [(:start-fn process-map)]}
+   (if (@registry key)
+     (throw (ex-info (str key " is already registered.") {:registered-process process-map}))
+     (do (swap! registry assoc key process-map)
+         (t/infof "Registered process %s" key)))))
 
-(defn start! [key]
+(defn- start!* [key]
   (if-let [process (@registry key)]
     (if (::started process)
       (throw (ex-info (str "Process " key " already started.") {:strated-process process}))
@@ -32,7 +36,11 @@
         (t/infof "Started process %s" key)))
     (throw-not-registered key)))
 
-(defn stop! [key]
+(defn start! [& keys]
+  (doseq [k keys]
+    (start!* k)))
+
+(defn- stop!* [key]
   (if-let [process (@registry key)]
     (if-let [stop-fn (:stop-fn process)]
       (let [stopped-process (dissoc (stop-fn process)
@@ -42,20 +50,27 @@
       (throw (ex-info (str key " as no stop-fn. Cannot be stopped.") {:unstoppable-process process})))
     (throw-not-registered key)))
 
-(defn unregister
+(defn stop! [& keys]
+  (doseq [k keys]
+    (stop!* k)))
+
+(defn- unregister*
   "Unregisters and potentially stops a process"
   [key]
   (if-let [process (@registry key)]
     (do
       (cond (and (::started process) (:stop-fn process))
-            (do (t/warnf "Registered process %s was started. Stopping it.")
+            (do (t/warnf "Registered process %s was started. Stopping it." key)
                 (stop! key))
-
             (::started process)
-            (t/warnf "Registered process %s was started but has no stop-fn."))
+            (t/warnf "Registered process %s was started but has no stop-fn." key))
       (swap! registry dissoc key)
       (t/infof "Unregistered process %s" key))
     (throw-not-registered key)))
+
+(defn unregister [& keys]
+  (doseq [k keys]
+    (unregister* k)))
 
 (defn register-and-start [key process-map]
   (register key process-map)
