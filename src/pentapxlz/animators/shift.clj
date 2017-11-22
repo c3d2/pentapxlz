@@ -1,7 +1,8 @@
-(ns pentapxlz.animators.shift)
+(ns pentapxlz.animators.shift
+  (:require [pentapxlz.animators.common :as common]))
 
 (defn shift-animator [{:keys [framerate state-atom offset] :as opts}]
-  (pentapxlz.animators.common/timed-future-step-animator
+  (common/timed-future-step-animator
     (assoc opts
       :step-fn (fn [s]
                  (take (count s)

@@ -68,3 +68,7 @@
   (doseq [k (keys @registry)]
     (if (not (::started (@registry k)))
       (start! k))))
+
+(defn unregister-all! []
+  (doseq [k (keys @registry)]
+    (unregister k)))
