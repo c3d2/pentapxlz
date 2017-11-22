@@ -5,6 +5,7 @@
   ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-RC1"]
                  [aero "1.1.2"]
+                 [com.taoensso/timbre "4.10.0"] ;; logging lib for clj/cljs
                  #_[spectrum "0.1.4-joe"]]  ;; fix for bigdec? missing in clojure 1.9.0-RC1
 
   :main ^:skip-aot pentapxlz.core
