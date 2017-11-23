@@ -7,6 +7,7 @@
                  [aero "1.1.2"]
                  [com.taoensso/timbre "4.10.0"] ;; logging lib for clj/cljs
                  [com.rpl/specter "1.0.5"]
+                 [org.clojure/core.logic "0.8.11"]
                  #_[spectrum "0.1.4-joe"]]  ;; fix for bigdec? missing in clojure 1.9.0-RC1
 
   :main ^:skip-aot pentapxlz.core
