@@ -1,6 +1,7 @@
 (ns pentapxlz.animators.common
   (:require [clojure.core.async :refer [<! timeout]]
-            [pentapxlz.processes.atom-registry :as ar]))
+            [pentapxlz.processes.atom-registry :as ar]
+            [com.rpl.specter :as s]))
 
 (defn- timeout-in-ms [framerate]
   (long (max (quot 1000 framerate) 1)))
@@ -22,4 +23,10 @@
    :stop-fn (fn [{:keys [future] :as this}]
                 (future-cancel future)
                 (dissoc this :future))})
+
+(defn specter-animator [{:keys [framerate state nav transform-fn] :as opts}]
+  (timed-future-step-animator
+    (assoc opts
+      :step-fn #(s/transform nav transform-fn %))))
+
 
