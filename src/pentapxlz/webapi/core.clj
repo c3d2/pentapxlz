@@ -3,7 +3,7 @@
             [compojure.core :refer [routes]]
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
-            [pentapxlz.config :refer [config]]
+            [pentapxlz.config :refer [config reload-config!]]
             [pentapxlz.webapi.stream.state :refer [streaming-state-handler streaming-atom-state-handler]]
             [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]
             [taoensso.timbre :as t]))
@@ -34,13 +34,14 @@
 (defonce server (atom nil))
 
 (defn server-start []
+  (reload-config!)
   (if @server
     (t/info "Server already running.")
     (reset! server
             (http/start-server (create-app)
                                {:raw-stream? false      ;; otherwise problems with PUT/POST
-                                :host        (get-in config [:webserver :host])
-                                :port        (get-in config [:webserver :port])}))))
+                                :host        (get-in @config [:webserver :host])
+                                :port        (get-in @config [:webserver :port])}))))
 
 (defn server-restart []
   (if-let [s @server]

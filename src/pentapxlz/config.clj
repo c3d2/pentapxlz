@@ -3,10 +3,6 @@
             [pentapxlz.state :as state])
   (:import (java.io File)))
 
-(defmethod aero.core/reader 'atom
-  [_ _ value]
-  (state/resolve-atom value))
-
 (defn deep-merge [v & vs]
   (letfn [(rec-merge [v1 v2]
             (if (and (map? v1) (map? v2))
@@ -24,9 +20,13 @@
 
 (def homedir (System/getProperty "user.home"))
 
-(defn reload-config []
+(defn- load-config []
   (read-configs-when-existing ["config.edn"
                                "/etc/pentapxlz/config.edn"
                                (str homedir "/.pentapxlz/config.edn")]))
 
-(def config (reload-config))
+(defonce config (atom (load-config)))
+
+(defn reload-config! []
+  (let [c (load-config)]
+    (reset! config c)))

@@ -1,4 +1,6 @@
 (ns pentapxlz.process.renderer.ustripe
+  "renderer that uses the ustripe to render frame or animation.
+   For ustriped see: https://github.com/astro/pile/tree/master/ustriped"
   (:require [aleph.udp :as udp]
             [manifold.stream :as mf]
             [clojure.core.async :refer [go-loop timeout <! >!] :as async]

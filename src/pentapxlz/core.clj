@@ -9,13 +9,12 @@
             [pentapxlz.process.renderer.quil]
             [pentapxlz.process.renderer.ustripe]
             [pentapxlz.colors :as c]
-            [pentapxlz.config :refer [config reload-config]]
+            [pentapxlz.config :refer [config reload-config!]]
             [pentapxlz.frame-generator.constant]
             [pentapxlz.frame-generator.spiral]
             [pentapxlz.process.util.registry :refer [start! stop! register unregister config!] :as p]
             [pentapxlz.process.util.resolve :refer [resolve-process]]
             [pentapxlz.state :as state]
-            #_[pentapxlz.examples :as examples]
             [pentapxlz.webapi.core :refer [server-start server-restart]]))
 
 #_
@@ -34,7 +33,7 @@
   []
   (let [started (into #{} (p/ls-started))]
     (p/unregister-all!)
-    (let [config (reload-config)
+    (let [config (reload-config!)
           processes (:processes config {})
           auto-start (:processes/auto-start config {})]
       (doseq [[k process-map] processes]
@@ -43,7 +42,8 @@
       (apply start! (into started auto-start)))))
 
 (defn -main [& args]
-  (state/init-states! (:states (reload-config)))
+  (reload-config!)
+  (state/init-states! (:states @config))
   (restart-processes!)
   (server-start))
 
