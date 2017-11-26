@@ -1,55 +1,88 @@
-{:config-format-version 0
+{:config-format-version 1
 
- :pxlz {:ledbeere {:nrPxlz 226
-                   :colors [:b :g :r]
-                   :brightMax 0xff
-                   :ustripe {:host "ledbeere.hq.c3d2.de"
-                             :port 2342
-                             :prio 0x23}}
-        :ledball1 {:nrPxlz 640
-                   :colors [:r :b :g]
-                   :brightMax 0xaa
-                   :geometry {:spiral [48 59 69 73 75 71 65 56 46 36 26 20]}
-                   :ustripe {:host "ledball1.hq.c3d2.de"
-                             :port 2342
-                             :prio 0x23}}}
- :webserver {:host "localhost"
-             :public-hostname "ustriper.hq.c3d2.de"
-             :port 8080}
- :processes {:renderer/ledbeere {:type :renderer/ustripe-animation
-                                 :pixel-count 226
-                                 :color-map [:b :g :r]
-                                 :bright-max 0xff
-                                 :host "ledbeere.hq.c3d2.de"
-                                 :port 2342
-                                 :prio 0x23
-                                 :framerate 20
-                                 :state :state/ledbeere-animation}
-             :renderer/ledball1 {:type :renderer/ustripe-animation
-                                 :pixel-count 640
-                                 :color-map [:r :b :g]
-                                 :bright-max 0xaa
-                                 :host "ledball1.hq.c3d2.de"
-                                 :port 2342
-                                 :prio 0x23
-                                 :framerate 30
-                                 :state :state/ledball1-animation}
-             :renderer/quil-frame
-                                {:type :renderer/quil-frame
-                                 :framerate 60
-                                 :state :state/ledball1}
-             :renderer/quil-animation
-                                {:type :renderer/quil-animation
-                                 :framerate 30
-                                 :state :state/ledball1-animation}
-             :animator/shift    {:type :animator/shift
-                                 :state :state/ledbeere
-                                 :offset 1
-                                 :framerate 30}
-             :animator/shift-ball {:type :animator/shift
-                                   :state :state/ledball1
-                                   :offset 1
-                                   :framerate 30}}
- :processes/auto-start [:renderer/quil-frame :animator/shift-ball]}
+ :layout                {:ledbeere {:nrPxlz 226}
+                         :ledball1 {:nrPxlz   640
+                                    :geometry {:spiral [48 59 69 73 75 71 65 56 46 36 26 20]}}}
+
+ :devices               {:ledbeere {:layout    ^:ref [:layout :ledbeere]
+                                    :colors    [:b :g :r]
+                                    :brightMax 0xff
+                                    :ustripe   {:host "ledbeere.hq.c3d2.de"
+                                                :port 2342}}
+                         :ledball1 {:layout    ^:ref [:layout :ledball1]
+                                    :colors    [:r :b :g]
+                                    :brightMax 0xaa
+                                    :ustripe   {:host "ledball1.hq.c3d2.de"
+                                                :port 2342}}}
+
+ :webserver             {:host            "localhost"
+                         :public-hostname "ustriper.hq.c3d2.de"
+                         :port            8080}
+
+ :states                {:state/ledball1-frame {:type :generator/spiral
+                                                :geometry [48 59 69 73 75 71 65 56 46 36 26 20]}
+                                               ;TODO rewrite with layout
+                         :state/ledbeere-frame {:type :generator/constant
+                                                :color :blue
+                                                :length 226}
+                         :state/ledball1-animation []
+                         :state/ledbeere-animation []}
+
+ :processes             {:renderer/ledbeere-frame
+                                              {:type      :renderer/ustripe-frame
+                                               :device    ^:ref [:devices :ledbeere]
+                                               :prio      0x23
+                                               :framerate 30
+                                               :state     :state/ledbeere-frame}
+
+                         :renderer/ledbeere-animation
+                                              {:type      :renderer/ustripe-animation
+                                               :device    ^:ref [:devices :ledbeere]
+                                               :prio      0x23
+                                               :framerate 30
+                                               :state     :state/ledbeere-animation}
+
+                         :renderer/ledball1-frame
+                                              {:type      :renderer/ustripe-frame
+                                               :device    ^:ref [:devices :ledball1]
+                                               :prio      0x23
+                                               :framerate 30
+                                               :state     :state/ledball1-frame}
+
+                         :renderer/ledball1-animation
+                                              {:type      :renderer/ustripe-animation
+                                               :device    ^:ref [:devices :ledball1]
+                                               :prio      0x23
+                                               :framerate 30
+                                               :state     :state/ledball1-animation}
+
+                         :renderer/quil-frame
+                                              {:type      :renderer/quil-frame
+                                               :framerate 60
+                                               :state     :state/ledball1-frame}
+
+                         :renderer/quil-animation
+                                              {:type      :renderer/quil-animation
+                                               :framerate 30
+                                               :state     :state/ledball1-animation}
+
+                         :animator/shift-ledbeere
+                                              {:type      :animator/shift
+                                               :state     :state/ledbeere-frame
+                                               :offset    1
+                                               :framerate 30}
+
+                         :animator/shift-ball
+                                              {:type      :animator/shift
+                                               :state     :state/ledball1-frame
+                                               :offset    1
+                                               :framerate 30}
+                         :animator/green-shift
+                                              {:type      :animator/color-shift
+                                               :state     :state/ledball1-frame
+                                               :color     :green
+                                               :framerate 30}}
+
+ :processes/auto-start [:animator/shift-ball :renderer/ledball1-frame]}
 
 

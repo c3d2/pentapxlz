@@ -1,7 +1,7 @@
-(ns pentapxlz.animators.shift
-  (:require [pentapxlz.animators.common :as common]
-            [pentapxlz.processes.resolve :as r]
-            [com.rpl.specter :as s]))
+(ns pentapxlz.process.animator.shift
+  (:require [pentapxlz.process.animator.common :as common]
+            [pentapxlz.process.util.resolve :as r]
+            [com.rpl.specter :as sp]))
 
 (defn shift-fn [offset]
   (fn [s]
@@ -26,7 +26,7 @@
 (defn color-shift-animator [{:keys [framerate state color] :as opts}]
   (common/specter-animator
     (merge opts
-           {:nav [s/ALL ({:red 0 :green 1 :blue 2} color)]
+           {:nav [sp/ALL ({:red 0 :green 1 :blue 2} color)]
             :transform-fn #(mod (inc %) 255)})))
 
 (defmethod r/resolve-process

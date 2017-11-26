@@ -1,5 +1,5 @@
 (ns pentapxlz.mappings.segments
-  (:require [pentapxlz.pxlz-state :refer [pxlz set-rgbPxlz!]]
+  (:require #_[pentapxlz.pxlz-state :refer [pxlz set-rgbPxlz!]]
             [pentapxlz.colors :refer :all]))
 
 (defn segments [nr+colors]
@@ -14,7 +14,8 @@
 (defn zipvector [as bs]
   (mapv (fn [a b] [a b]) as bs))
 
+#_
 (defn set-example-spiral-latitude! [targets]
   (set-rgbPxlz! (segments (zipvector (get-in @pxlz [(first targets) :geometry :spiral])
                                      (looped [red blue yellow green])))
-                 targets))
+                targets))

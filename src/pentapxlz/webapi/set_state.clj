@@ -3,8 +3,8 @@
             [compojure.api.sweet :refer [PUT]]
             [clojure.spec.alpha :as s]
             [spec-tools.core :as st]
-            [pentapxlz.pxlz-state :refer [pxlz set-rgbPxlz!]]
-            [pentapxlz.mappings.segments :as seg]))
+            [pentapxlz.mappings.segments :as seg]
+            [pentapxlz.state :as state]))
 
 (s/def ::color (s/int-in 0 256))
 (s/def ::pixel (s/tuple ::color ::color ::color))
@@ -30,7 +30,7 @@
     (let [frame-looped (if looped
                                (seg/looped frame)
                                frame)]
-         (set-rgbPxlz! frame-looped [target]))
+      (state/set! target frame-looped))
     (ok true)))
 
 (defn put-state-segments-handler [path]
@@ -50,5 +50,5 @@
     (let [nr+colors-looped (if looped
                              (seg/looped nr+colors)
                              nr+colors)]
-      (set-rgbPxlz! (seg/segments nr+colors-looped) [target]))
+      (state/set! target (seg/segments nr+colors-looped)))
     (ok true)))

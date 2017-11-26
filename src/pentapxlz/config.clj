@@ -1,11 +1,11 @@
 (ns pentapxlz.config
   (:require [aero.core :refer [read-config]]
-            [pentapxlz.processes.atom-registry :as ar])
+            [pentapxlz.state :as state])
   (:import (java.io File)))
 
 (defmethod aero.core/reader 'atom
   [_ _ value]
-  (ar/resolve-atom value))
+  (state/resolve-atom value))
 
 (defn deep-merge [v & vs]
   (letfn [(rec-merge [v1 v2]

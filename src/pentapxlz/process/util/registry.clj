@@ -1,7 +1,8 @@
-(ns pentapxlz.processes.registry
-  (:require [taoensso.timbre :as t]))
+(ns pentapxlz.process.util.registry
+  (:require [taoensso.timbre :as t]
+            [pentapxlz.process.util.resolve :as r]))
 
-;namespace to start and stop processes like renderers.
+;namespace to start and stop processes like renderer.
 ;to handle a process via this registry, the process needs to conform to the following conditions:
 ; * is a map
 ; * has a key :start-fn of process-map -> process-map
@@ -104,3 +105,21 @@
 (defn ls-started []
   (map first (filter (fn [[k v]] (::started v))
                      @registry)))
+
+(defn show [k]
+  (@registry k))
+
+(defn- config* [k new-opts]
+  (let [old-process-map (@registry k)
+        new-process-map (r/resolve-process (merge old-process-map new-opts))]
+    (swap! registry assoc k new-process-map)))
+
+(defn config! [k new-opts]
+  (if-let [process-map (@registry k)]
+    (if (::started process-map)
+      (do (stop! k)
+          (config* k new-opts)
+          (start! k))
+      (config* k new-opts))
+    (throw-not-registered k)))
+

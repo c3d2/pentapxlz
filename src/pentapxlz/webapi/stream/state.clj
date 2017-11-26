@@ -4,10 +4,9 @@
             [spec-tools.core :as st]
             [manifold.stream :refer [->source]]
             [clojure.core.async :as a :refer [chan >! <! close! timeout go go-loop]]
-            [pentapxlz.pxlz-state :refer [pxlz]]
             [clojure.string :refer [join]]
             [pentapxlz.colors :refer [colormapX+colormapY->colorX->colorY]]
-            [pentapxlz.processes.atom-registry :as ar]
+            [pentapxlz.state :as state]
             [pentapxlz.colors :as c]))
 
 (defn rgb->ansi [rgb]
@@ -17,6 +16,9 @@
        (str (char 27) "[48;5;" ansicolor "m"
             ansicolor
             (char 27) "[0m")))
+
+(defn get-frame-state [target]
+  @(state/resolve-atom (keyword "state" (name target))))
 
 (defn streaming-state-handler [path]
   (GET path []
@@ -29,7 +31,7 @@
     :query-params [{target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz))  ;;TODO
                                        {:type :keyword
                                         :description "<b>target</b> whose state should be returned"})
-                    (first (keys @pxlz))}
+                    (name (first (state/ls)))}
                    {streamevery :- (st/spec int? {:description "Resend the result <b>streamevery</b> ms (when set and > 0)"}) 0}
                    {ansicolor :- (st/spec boolean? {:description "Encode as ansi-escape-sequences (for usage on commandline)"}) false}
                    {rgbcolor :- (st/spec boolean? {:description "Return rgb, not hostcolors (implied by <b>ansicolor</b>)"}) true}
@@ -41,12 +43,8 @@
           reverseFn (if reversed reverse identity)
           body (chan)]
          (go-loop []
-           (let [frame-in-hostcolors (-> (get-in @pxlz [target :frame])
-                                         reverseFn)
-                 frame (if (or rgbcolor ansicolor)
-                           (let [colormapping (colormapX+colormapY->colorX->colorY (get-in @pxlz [target :colors]) [:r :g :b])]
-                                (map colormapping frame-in-hostcolors))
-                           frame-in-hostcolors)]
+           (let [frame (-> (get-frame-state target)
+                           reverseFn)]
                 (if ansicolor
                     (>! body (str (char 27) "[2J"
                                   (join separator (apply vector (map rgb->ansi frame)))
@@ -72,7 +70,7 @@
     :query-params [{target :- (st/spec #{:ledbeere :ledball1} #_(set (keys @pxlz))  ;;TODO
                                        {:type :keyword
                                         :description "<b>target</b> whose state should be returned"})
-                           (first (keys @pxlz))}
+                           (name (first (state/ls)))}
                    {streamevery :- (st/spec int? {:description "Resend the result <b>streamevery</b> ms (when set and > 0)"}) 0}
                    {ansicolor :- (st/spec boolean? {:description "Encode as ansi-escape-sequences (for usage on commandline)"}) false}
                    {rgbcolor :- (st/spec boolean? {:description "Return rgb, not hostcolors (implied by <b>ansicolor</b>)"}) true}
@@ -84,7 +82,7 @@
           reverseFn (if reversed reverse identity)
           body (chan)]
       (go-loop []
-        (let [frame (reverseFn @(ar/resolve-atom (keyword "state" (name target))))]
+        (let [frame (reverseFn @(state/resolve-atom (keyword "state" (name target))))]
           (if ansicolor
             (>! body (str (char 27) "[2J"
                           (join separator (apply vector (->> frame

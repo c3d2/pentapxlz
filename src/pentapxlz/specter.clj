@@ -1,7 +1,7 @@
 (ns pentapxlz.specter
   (:require [com.rpl.specter :refer :all]
             [com.rpl.specter.macros :as m]
-            [pentapxlz.processes.atom-registry :as ar]))
+            [pentapxlz.state :as state]))
 
 (defn every-pred-index
   "Navigates to all elements of a seq whose indicies satisfy pred"
@@ -17,9 +17,9 @@
 (m/defnav STATE-ATOM
   []
   (select* [this s next-fn]
-    (next-fn (ar/resolve-atom (state-kw s))))
+    (next-fn (state/resolve-atom (state-kw s))))
   (transform* [this s next-fn]
-    (do (next-fn (ar/resolve-atom (state-kw s)))
+    (do (next-fn (state/resolve-atom (state-kw s)))
         nil)))
 
 (def STATE

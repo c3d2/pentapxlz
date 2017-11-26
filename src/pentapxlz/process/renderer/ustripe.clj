@@ -1,10 +1,10 @@
-(ns pentapxlz.renderer.ustripe
+(ns pentapxlz.process.renderer.ustripe
   (:require [aleph.udp :as udp]
             [manifold.stream :as mf]
             [clojure.core.async :refer [go-loop timeout <! >!] :as async]
             [pentapxlz.colors :as c]
-            [pentapxlz.processes.resolve :as r]
-            [pentapxlz.processes.atom-registry :as ar]))
+            [pentapxlz.process.util.resolve :as r]
+            [pentapxlz.state :as state]))
 
 (defn- concat-pixels-transducer [xf]
   (fn
@@ -18,7 +18,6 @@
   (into []
     (comp
       (take pixel-count)
-      (map c/->rgb)
       (map (c/colormapX+colormapY->colorX->colorY [:r :g :b] color-map))
       (map #(c/normalize-hysteresis % bright-max))
       concat-pixels-transducer
@@ -58,10 +57,13 @@
 
 (defn- build-ustripe-renderer-fn [loop-fn]
   (fn
-    [{:keys [host port prio framerate state bright-max color-map pixel-count]}]
-    (let [timeout-duration (timeout-in-ms framerate)
-          message-builder (partial build-message prio bright-max color-map pixel-count)
-          frame-atom (ar/resolve-atom state)
+    [{:keys [device prio framerate state]}]
+    (let [{:keys [colors brightMax ustripe layout]} device
+          {:keys [host port]} ustripe
+          {:keys [nrPxlz]} layout
+          timeout-duration (timeout-in-ms framerate)
+          message-builder (partial build-message prio brightMax colors nrPxlz)
+          frame-atom (state/resolve-atom state)
           socket @(udp/socket {})
           control-chan (async/chan)
           result-chan (loop-fn host port socket control-chan message-builder timeout-duration frame-atom)]
@@ -79,14 +81,14 @@
   (mf/close! socket))
 
 (defn ustripe-frame-renderer [opts]
-  {:opts opts
-   :start-fn (fn [{:keys [opts] :as this}]
-               (-> this
-                   (merge (start-ustripe-frame-renderer opts))
-                   (assoc :stop-fn
-                          (fn [this]
-                            (stop-ustripe-renderer! this)
-                            (dissoc this :stop-fn)))))})
+  (into opts
+        {:start-fn (fn [this]
+                     (-> this
+                         (merge (start-ustripe-frame-renderer this))
+                         (assoc :stop-fn
+                                (fn [this]
+                                  (stop-ustripe-renderer! this)
+                                  (dissoc this :stop-fn)))))}))
 
 (defmethod r/resolve-process
   :renderer/ustripe-frame [opts] (ustripe-frame-renderer opts))
@@ -108,14 +110,14 @@
   (build-ustripe-renderer-fn start-animation-loop))
 
 (defn ustripe-animation-renderer [opts]
-  {:opts opts
-   :start-fn (fn [{:keys [opts] :as this}]
-               (-> this
-                   (merge (start-ustripe-animation-renderer opts))
-                   (assoc :stop-fn
-                          (fn [this]
-                            (stop-ustripe-renderer! this)
-                            (dissoc this :stop-fn)))))})
+  (into opts
+        {:start-fn (fn [this]
+                     (-> this
+                         (merge (start-ustripe-animation-renderer this))
+                         (assoc :stop-fn
+                                (fn [this]
+                                  (stop-ustripe-renderer! this)
+                                  (dissoc this :stop-fn)))))}))
 
 (defmethod r/resolve-process
   :renderer/ustripe-animation [opts] (ustripe-animation-renderer opts))
