@@ -1,5 +1,5 @@
 (ns pentapxlz.process.renderer.quil
-  (:require [quil.core :as q]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [pentapxlz.process.util.resolve :as r]
             [pentapxlz.colors :as c]

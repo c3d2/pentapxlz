@@ -1,7 +1,7 @@
 (ns pentapxlz.process.animator.shift
   (:require [pentapxlz.process.animator.common :as common]
             [pentapxlz.process.util.resolve :as r]
-            [com.rpl.specter :as sp]))
+            [com.rpl.specter :as sp :include-macros true]))
 
 (defn shift-fn [offset]
   (fn [s]
@@ -11,7 +11,7 @@
                       (concat s s))))))
 
 (defn shift-animator [{:keys [framerate state offset] :as opts}]
-  (common/timed-future-step-animator
+  (common/timed-go-step-animator
     (assoc opts
       :step-fn (shift-fn offset))))
 

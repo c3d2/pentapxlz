@@ -1,23 +1,7 @@
 (ns pentapxlz.colors
-  (:import (clojure.lang IPersistentVector Keyword)
-           (java.util Map)))
-
-(def black   [0x00 0x00 0x00])
-(def navy    [0x00 0x00 0x80])
-(def blue    [0x00 0x00 0xff])
-(def green   [0x00 0x80 0x00])
-(def teal    [0x00 0x80 0x80])
-(def lime    [0x00 0xff 0x00])
-(def aqua    [0x00 0xff 0xff])
-(def maroon  [0x80 0x00 0x00])
-(def purple  [0x80 0x00 0x80])
-(def olive   [0x80 0x80 0x00])
-(def gray    [0x80 0x80 0x80])
-(def silver  [0xc0 0x0c 0xc0])
-(def red     [0xff 0x00 0x00])
-(def fuchsia [0xff 0x00 0xff])
-(def yellow  [0xff 0xff 0x00])
-(def white   [0xff 0xff 0xff])
+  #?(:clj
+     (:import (clojure.lang IPersistentVector Keyword)
+              (java.util Map))))
 
 (def cmap
   {:black   [0x00 0x00 0x00]
@@ -60,13 +44,16 @@
   (->rgb [this]))
 
 (extend-protocol ColorPixel
-  IPersistentVector
+  #?(:cljs IVector
+     :clj  IPersistentVector)
   (->rgb [this] this)
-  Map
+  #?(:cljs IMap
+     :clj  Map)
   (->rgb [this] [(:r this) (:g this) (:b this)])
   Keyword
   (->rgb [this] (cmap this))
-  Long
+  #?(:cljs js/Number
+     :clj Long)
   (->rgb [this]
     [(quot this (* 256 256))
      (mod (quot this 256) 256)

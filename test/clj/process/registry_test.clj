@@ -1,6 +1,6 @@
-(ns pentapxlz.processes.registry-test
+(ns pentapxlz.process.registry-test
   (:require [clojure.test :refer :all]
-            [pentapxlz.processes.registry :refer :all])
+            [pentapxlz.process.util.registry :refer :all])
   (:import (clojure.lang ExceptionInfo)))
 
 (def test-process
@@ -9,7 +9,7 @@
    :stop-fn #(update % :state dec)})
 
 (deftest registry-lifecycle
-  (with-redefs [pentapxlz.processes.registry/registry (atom {})]
+  (with-redefs [pentapxlz.process.util.registry/registry (atom {})]
     (testing "throws errors if not registered"
       (is (thrown? ExceptionInfo (start! ::test)) "Cannot start unregistered process")
       (is (thrown? ExceptionInfo (stop! ::test)) "Cannot stop unregistered process"))

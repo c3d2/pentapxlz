@@ -1,7 +1,10 @@
 (ns pentapxlz.process.animator.common
-  (:require [clojure.core.async :refer [<! timeout]]
+  #?(:cljs (:require-macros [cljs.core.async :refer [go]]))
+  (:require #?(:clj [clojure.core.async :refer [go <! timeout] :as a]
+               :cljs [cljs.core.async :refer [<! timeout] :as a :include-macros true])
             [pentapxlz.state :as state]
-            [com.rpl.specter :as sp]))
+            [pentapxlz.process.util.loop :as loop]
+            [com.rpl.specter :as sp :include-macros true]))
 
 (defn- timeout-in-ms [framerate]
   (long (max (quot 1000 framerate) 1)))
@@ -24,8 +27,17 @@
                      (future-cancel future)
                      (dissoc this :future))}))
 
+(defn timed-go-step-animator [opts]
+  (into opts
+        {:start-fn (fn [this]
+                     (-> this
+                         (merge (loop/start-timed-go-step-animator opts))))
+         :stop-fn (fn [{:keys [control-chan] :as this}]
+                    (go (a/>! control-chan loop/exit))
+                    (dissoc this :control-chan))}))
+
 (defn specter-animator [{:keys [framerate state nav transform-fn] :as opts}]
-  (timed-future-step-animator
+  (timed-go-step-animator
     (assoc opts
       :step-fn #(sp/transform nav transform-fn %))))
 

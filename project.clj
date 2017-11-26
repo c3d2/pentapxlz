@@ -5,10 +5,19 @@
   ;          :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-RC1"]
                  [aero "1.1.2"]
-                 [com.taoensso/timbre "4.10.0"] ;; logging lib for clj/cljs
+                 [com.taoensso/timbre "4.10.0"]             ;; logging lib for clj/cljs
                  [com.rpl/specter "1.0.5"]
                  [org.clojure/core.logic "0.8.11"]
-                 #_[spectrum "0.1.4-joe"]]  ;; fix for bigdec? missing in clojure 1.9.0-RC1
+                 [org.clojure/clojurescript "1.9.946" :scope "provided"]
+                 #_[spectrum "0.1.4-joe"]]                  ;; fix for bigdec? missing in clojure 1.9.0-RC1
+
+  :source-paths ["src/clj" "src/cljc"]
+
+  :test-paths ["test/clj" "test/cljc"]
+
+  :resource-paths ["resources" "target/cljsbuild"]
+
+  :clean-targets ^{:protect false} [:target-path :compile-path "resources/public/js/compiled"]
 
   :main ^:skip-aot pentapxlz.core
   :target-path "target/%s"
@@ -27,5 +36,24 @@
              :figlet          {:dependencies [[clj-figlet "0.1.1"]]}
              :quil            {:dependencies [[quil "2.6.0"]]}
              :recommended     [:ustripe-clojure :webapi :figlet :quil]
-             :dev             [:recommended {:dependencies [[criterium "0.4.4"]]}]
-             :uberjar         [:recommended {:aot :all}]})
+             :dev             [:recommended :cljs/dev {:dependencies [[criterium "0.4.4"]]}]
+             :uberjar         [:recommended {:aot :all}]
+             :cljs/dev        {:dependencies [[figwheel-sidecar "0.5.14"]
+                                              [com.cemerick/piggieback "0.2.2"]]
+                               :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                               :plugins      [[lein-figwheel "0.5.14"]
+                                              [lein-cljsbuild "1.1.7"]]
+                               :cljsbuild
+                                             {:builds
+                                              {:app
+                                               {:source-paths ["src/cljs" "src/cljc"]
+                                                :figwheel     true
+                                                :compiler
+                                                              {:main          "pentapxlz.core"
+                                                               :asset-path    "/js/compiled/out"
+                                                               :output-to     "resources/public/js/compiled/app.js"
+                                                               :output-dir    "resources/public/js/compiled/out"
+                                                               :source-map    true
+                                                               :optimizations :none
+                                                               :pretty-print  true}}}}}})
+

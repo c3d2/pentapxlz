@@ -1,8 +1,8 @@
 (ns pentapxlz.process.util.registry
-  (:require [taoensso.timbre :as t]
+  (:require [taoensso.timbre :as t :include-macros true]
             [pentapxlz.process.util.resolve :as r]))
 
-;namespace to start and stop processes like renderer.
+;namespace to start and stop process like renderer.
 ;to handle a process via this registry, the process needs to conform to the following conditions:
 ; * is a map
 ; * has a key :start-fn of process-map -> process-map

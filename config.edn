@@ -83,6 +83,6 @@
                                                :color     :green
                                                :framerate 30}}
 
- :processes/auto-start [:animator/shift-ball :renderer/ledball1-frame]}
+ :processes/auto-start [:animator/shift-ball :renderer/quil-frame]}
 
 
