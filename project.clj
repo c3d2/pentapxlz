@@ -20,6 +20,9 @@
   :clean-targets ^{:protect false} [:target-path :compile-path "resources/public/js/compiled"]
 
   :main ^:skip-aot pentapxlz.core
+
+  :repl-options {:init-ns user}
+
   :target-path "target/%s"
   :profiles {:ustripe-clojure {:dependencies [[aleph "0.4.4"]
                                               [manifold "0.1.6"]

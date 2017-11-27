@@ -3,6 +3,7 @@
 
 (defn constant-generator
   "Generates a frame of a single 'color' with 'length'"
+  ;; like the segments-generator with only one segment
   [{:keys [color length]}]
   (repeat length color))
 

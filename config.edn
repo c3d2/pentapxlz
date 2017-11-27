@@ -19,12 +19,13 @@
                          :public-hostname "ustriper.hq.c3d2.de"
                          :port            8080}
 
- :states                {:state/ledball1-frame {:type :generator/spiral
-                                                :geometry [48 59 69 73 75 71 65 56 46 36 26 20]}
-                                               ;TODO rewrite with layout
+ :states                {:state/ledball1-frame {:type :generator/spiral  ;; TODO rename :type -> :initial
+                                                :geometry [48 59 69 73 75 71 65 56 46 36 26 20]  ;; TODO rewrite with layout
+                                                :layout ^:ref [:layout :ledball1]}
                          :state/ledbeere-frame {:type :generator/constant
                                                 :color :blue
-                                                :length 226}
+                                                :length 226  ;; use layout
+                                                :layout ^:ref [:layout :ledbeere]}
                          :state/ledball1-animation []
                          :state/ledbeere-animation []}
 

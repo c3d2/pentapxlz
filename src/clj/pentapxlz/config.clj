@@ -1,6 +1,5 @@
 (ns pentapxlz.config
-  (:require [aero.core :refer [read-config]]
-            [pentapxlz.state :as state])
+  (:require [aero.core :refer [read-config]])
   (:import (java.io File)))
 
 (defn deep-merge [v & vs]

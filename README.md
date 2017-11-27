@@ -30,14 +30,19 @@ A clojure library to control led-stripes (and other pixels)
     $ cd pentapxlz
     $ lein repl
     > (-main)
+    > (pentapxlz.process.util.registry/ls-started)
+    > (pentapxlz.process.util.registry/stop-all!)
+    > (pprint (pentapxlz.process.util.registry/ls))
+    > (pentapxlz.process.util.registry/start! :renderer/ledbeere-frame)
 
-    ;; Set rgb values
-    > (pentapxlz.pxlz-state/set-rgbPxlz! (repeat [200 200 60]) [:ledball1])
-    > (doc pentapxlz.pxlz-state/set-rgbPxlz!)
+    ;; set some pixels
+    (set-simple! :state/ledbeere-frame [:green :blue])
+    (set-simple! :state/ledbeere-frame (looped (segments [[1 :red] [10 :yellow]])))
 
-    ;; Use helper functions to display patterns
-    > (use 'pentapxlz.colors 'pentapxlz.mappings.segments)
-    > (set-rgbPxlz! (looped (segments [[1 navy] [2 lime] [30 olive]])) [:ledball1])
+    ;; using frame-generators
+    (set-simple! :state/ledbeere-frame (resolve-generator {:type :generator/looped
+    							   :chain [:generator/segments]
+							   :nr+colors [[1 :blue] [10 :yellow]]}))
 
     ;; Read documentation and sources & try it yourself
     > (source pentapxlz.core/-main)

@@ -1,14 +1,8 @@
 (ns pentapxlz.frame-generator.spiral
-  (:require [pentapxlz.frame-generator.util.resolve :refer [resolve-generator]]))
-
-(defn- segments [nr+colors]
-  (->> (for [[nr color] nr+colors]
-         (take nr (repeat color)))
-       (apply concat)))
-
-(defn- looped [s]
-  (for [i (range)]
-    (nth s (mod i (count s)))))
+  (:require [pentapxlz.frame-generator.util.resolve :refer [resolve-generator]]
+            [pentapxlz.frame-generator.segments :refer [segments]]
+            [pentapxlz.frame-generator.looped :refer [looped]]
+            [pentapxlz.config :refer [config]]))
 
 (defn- zipvector [as bs]
   (mapv (fn [a b] [a b]) as bs))
@@ -18,11 +12,13 @@
         segments-rest (mapv - segments segments-quot2)]
     (interleave segments-quot2 segments-rest)))
 
-(defn spiral [{:keys [geometry]}]
-  (segments (zipvector (-> geometry
+(defn spiral-generator [{:keys [geometry]}]
+  (segments (zipvector (-> (if geometry
+                               geometry
+                               (get-in @config [:layout :ledball1 :geometry :spiral]))
                            bisect-segments
                            bisect-segments)
                        (looped [:red :blue :yellow :green]))))
 
 (defmethod resolve-generator
-  :generator/spiral [opts] (spiral opts))
+  :generator/spiral [opts] (spiral-generator opts))
