@@ -12,18 +12,6 @@
       (swap! atoms assoc kw a)
       a)))
 
-(defn init-states! [init-state-map]
-  (doseq [k (keys init-state-map)]
-    (let [a (resolve-atom k)
-          v (init-state-map k)]
-      (->>
-        (cond (map? v) (resolve-generator v)
-              (vector? v) v
-              :else [])
-        (map c/->rgb)
-        (into [])
-        (reset! a)))))
-
 (defn ls []
   (keys @atoms))
 
@@ -41,3 +29,26 @@
                                                  (resolve-generator {:type :generator/constant :color :black :length nrPxlz})))
                             (map pentapxlz.colors/->rgb))]
        (pentapxlz.state/set! kw new-save-state)))
+
+(defn init-states! [init-state-map]
+  (doseq [k (keys init-state-map)]
+    (let [a (resolve-atom k)
+          v (init-state-map k)]
+      (->>
+        (cond (map? v) (resolve-generator v)
+              (vector? v) v
+              :else [])
+        (set-simple! k)))))
+
+;; still needed for *-animation
+#_(defn init-states! [init-state-map]
+  (doseq [k (keys init-state-map)]
+    (let [a (resolve-atom k)
+          v (init-state-map k)]
+      (->>
+        (cond (map? v) (resolve-generator v)
+              (vector? v) v
+              :else [])
+        (map c/->rgb)
+        (into [])
+        (reset! a)))))

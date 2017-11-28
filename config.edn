@@ -1,4 +1,10 @@
-{:config-format-version 1
+{:config-format-version 2
+
+ :webserver             {:host            "localhost"
+                         :public-hostname "ustriper.hq.c3d2.de"
+                         :port            8080}
+
+;; The same layout could be used by multiple devices
 
  :layout                {:ledbeere {:nrPxlz 226}
                          :ledball1 {:nrPxlz   640
@@ -15,19 +21,22 @@
                                     :ustripe   {:host "ledball1.hq.c3d2.de"
                                                 :port 2342}}}
 
- :webserver             {:host            "localhost"
-                         :public-hostname "ustriper.hq.c3d2.de"
-                         :port            8080}
+ ;; Each device we can have multiple processes with multiple states
 
- :states                {:state/ledball1-frame {:type :generator/spiral  ;; TODO rename :type -> :initial
+ :states                {:state/ledball1-frame {:layout ^:ref [:layout :ledball1]
                                                 :geometry [48 59 69 73 75 71 65 56 46 36 26 20]  ;; TODO rewrite with layout
-                                                :layout ^:ref [:layout :ledball1]}
-                         :state/ledbeere-frame {:type :generator/constant
-                                                :color :blue
-                                                :length 226  ;; use layout
-                                                :layout ^:ref [:layout :ledbeere]}
-                         :state/ledball1-animation []
-                         :state/ledbeere-animation []}
+                                               ;:initial {
+                                                          :type :generator/spiral};}
+                         :state/ledbeere-frame {:layout ^:ref [:layout :ledbeere]
+                                               ;:initial {  ;; TODO
+                                                          :type :generator/looped
+                                                          :chain [:generator/stretched :generator/segments]
+                                                          :nr+colors [[1 :red] [2 :green] [2 :blue] [1 :red]]
+                                                          :length 11};}
+                         #_#_:state/ledball1-animation []  ;; TODO to be consequent, this should be nil or {:type …}
+                         #_#_:state/ledbeere-animation []}
+
+ ;; Register processes with defaults for renderers and animators
 
  :processes             {:renderer/ledbeere-frame
                                               {:type      :renderer/ustripe-frame
@@ -84,6 +93,7 @@
                                                :color     :green
                                                :framerate 30}}
 
- :processes/auto-start [:animator/shift-ball :renderer/quil-frame]}
-
-
+ :processes/auto-start [#_:renderer/quil-frame
+                        :renderer/ledbeere-frame
+                        :renderer/ledball1-frame
+                        :animator/shift-ball]}
