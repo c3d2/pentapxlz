@@ -30,9 +30,8 @@
                          :state/ledbeere-frame {:layout ^:ref [:layout :ledbeere]
                                                ;:initial {  ;; TODO
                                                           :type :generator/cycled
-                                                          :chain [:generator/stretched :generator/segments]
-                                                          :nr+colors [[1 :red] [2 :green] [2 :blue] [1 :red]]
-                                                          :length 11};}
+                                                          :chain [:generator/stretched :generator/rainbow]
+                                                          :length 113};}
                          #_#_:state/ledball1-animation []  ;; TODO to be consequent, this should be nil or {:type …}
                          #_#_:state/ledbeere-animation []}
 
@@ -80,7 +79,7 @@
                                               {:type      :animator/shift
                                                :state     :state/ledbeere-frame
                                                :offset    1
-                                               :framerate 30}
+                                               :framerate 10}
 
                          :animator/shift-ball
                                               {:type      :animator/shift
@@ -95,5 +94,6 @@
 
  :processes/auto-start [#_:renderer/quil-frame
                         :renderer/ledbeere-frame
+                        :animator/shift-ledbeere
                         :renderer/ledball1-frame
                         :animator/shift-ball]}
