@@ -1,7 +1,6 @@
 (ns pentapxlz.frame-generator.spiral
   (:require [pentapxlz.frame-generator.util.resolve :refer [resolve-generator]]
             [pentapxlz.frame-generator.segments :refer [segments]]
-            [pentapxlz.frame-generator.looped :refer [looped]]
             [pentapxlz.config :refer [config]]))
 
 (defn- zipvector [as bs]
@@ -18,7 +17,7 @@
                                (get-in @config [:layout :ledball1 :geometry :spiral]))
                            bisect-segments
                            bisect-segments)
-                       (looped [:red :blue :yellow :green]))))
+                       (cycle [:red :blue :yellow :green]))))
 
 (defmethod resolve-generator
   :generator/spiral [opts] (spiral-generator opts))

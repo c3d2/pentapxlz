@@ -29,7 +29,7 @@
                                                           :type :generator/spiral};}
                          :state/ledbeere-frame {:layout ^:ref [:layout :ledbeere]
                                                ;:initial {  ;; TODO
-                                                          :type :generator/looped
+                                                          :type :generator/cycled
                                                           :chain [:generator/stretched :generator/segments]
                                                           :nr+colors [[1 :red] [2 :green] [2 :blue] [1 :red]]
                                                           :length 11};}

@@ -1,7 +1,7 @@
-(ns pentapxlz.frame-generator.looped
+(ns pentapxlz.frame-generator.cycled
   (:require [pentapxlz.frame-generator.util.resolve :refer [resolve-generator]]))
 
-(defn looped-generator
+(defn cycled-generator
   "loops the result of the generator specified by the first item of chain"
   [{:keys [chain] :as args}]
   (->> [:type (first chain) :chain (rest chain)]
@@ -10,4 +10,4 @@
        cycle))
 
 (defmethod resolve-generator
-  :generator/looped [opts] (looped-generator opts))
+  :generator/cycled [opts] (cycled-generator opts))

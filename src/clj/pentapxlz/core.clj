@@ -8,7 +8,7 @@
             [pentapxlz.frame-generator.constant]
             [pentapxlz.frame-generator.segments]
             [pentapxlz.frame-generator.spiral]
-            [pentapxlz.frame-generator.looped]
+            [pentapxlz.frame-generator.cycled]
             [pentapxlz.frame-generator.stretched]
             [pentapxlz.process.util.registry :refer [start! stop! register unregister config!] :as p]
             [pentapxlz.process.util.resolve :refer [resolve-process]]

@@ -37,10 +37,10 @@ A clojure library to control led-stripes (and other pixels)
 
     ;; set some pixels
     (set-simple! :state/ledbeere-frame [:green :blue])
-    (set-simple! :state/ledbeere-frame (looped (segments [[1 :red] [10 :yellow]])))
+    (set-simple! :state/ledbeere-frame (cycle (segments [[1 :red] [10 :yellow]])))
 
     ;; using frame-generators
-    (set-simple! :state/ledbeere-frame (resolve-generator {:type :generator/looped
+    (set-simple! :state/ledbeere-frame (resolve-generator {:type :generator/cycled
     							   :chain [:generator/segments]
 							   :nr+colors [[1 :blue] [10 :yellow]]}))
 
