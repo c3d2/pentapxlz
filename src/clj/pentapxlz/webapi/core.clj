@@ -3,6 +3,7 @@
             [compojure.core :refer [routes]]
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
+            [ring.middleware.resource :refer [wrap-resource]]
             [pentapxlz.config :refer [config reload-config!]]
             [pentapxlz.webapi.stream.state :refer [streaming-frame-state-handler]]
             [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]
@@ -37,12 +38,12 @@
   (if @server
     (t/info "Server already running.")
     (reset! server
-            (http/start-server (create-app)
+            (http/start-server (wrap-resource (create-app) "public")
                                {:raw-stream? false      ;; otherwise problems with PUT/POST
                                 :host        (get-in @config [:webserver :host])
                                 :port        (get-in @config [:webserver :port])}))))
 
 (defn server-restart []
   (if-let [s @server]
-    (.close s))
+    (reset! server (.close s)))
   (server-start))

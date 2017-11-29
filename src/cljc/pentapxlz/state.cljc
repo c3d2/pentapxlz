@@ -27,7 +27,7 @@
   (let [nrPxlz (get-in @config [:states kw :layout :nrPxlz])
         new-save-state (->> (take nrPxlz (concat (take nrPxlz new-state)
                                                  (resolve-generator {:type :generator/constant :color :black :length nrPxlz})))
-                            (map pentapxlz.colors/->rgb))]
+                            (map c/->rgb))]
        (pentapxlz.state/set! kw new-save-state)))
 
 (defn init-states! [init-state-map]

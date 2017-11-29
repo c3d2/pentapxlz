@@ -44,7 +44,7 @@
   (->rgb [this]))
 
 (extend-protocol ColorPixel
-  #?(:cljs IVector
+  #?(:cljs PersistentVector
      :clj  IPersistentVector)
   (->rgb [this] this)
   #?(:cljs IMap

@@ -18,3 +18,5 @@
 
 (def auto-start [:renderer/quil-frame :animator/shift-ball])
 
+(def config (atom {:states {:state/ledball1-frame {:layout {:nrPxlz 255}}}}))
+
