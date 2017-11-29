@@ -4,7 +4,7 @@
             [compojure.api.sweet :refer [#_GET api context]]
             [compojure.route :refer [#_resources not-found]]
             [pentapxlz.config :refer [config reload-config!]]
-            [pentapxlz.webapi.stream.state :refer [streaming-state-handler streaming-atom-state-handler]]
+            [pentapxlz.webapi.stream.state :refer [streaming-frame-state-handler]]
             [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]
             [taoensso.timbre :as t]))
 
@@ -21,10 +21,9 @@
       (context "/api" []
         :tags ["api"]
         :coercion :spec
-        (put-state-handler "/frames")
-        (streaming-state-handler "/frames")
-        (put-state-segments-handler "/segments")
-        (streaming-atom-state-handler "/frames2")))
+        (streaming-frame-state-handler "/frames")
+        #_(put-state-handler "/frames")
+        #_(put-state-segments-handler "/segments")))
 
     (not-found (str "<div align=\"center\">"
                     "No such page, but you can use the" "<br/>"

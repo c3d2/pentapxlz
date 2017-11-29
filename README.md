@@ -22,7 +22,7 @@ A clojure library to control led-stripes (and other pixels)
 
 ### Webapi
     ## View current state on cmdline (via eventstream + ansi-escape-sequences)
-    $ curl 'http://localhost:8080/state?target=ledbeere&streamevery=100&ansicolor=true'
+    $ curl 'http://localhost:8080/frame?target=ledbeere&streamevery=100&ansicolor=true'
 
 * For more features read the [API-Documentation](http://localhost:8080/api)
 
