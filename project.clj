@@ -31,7 +31,9 @@
                                               [com.ninjudd/eventual "0.5.5"]
                                               [manifold "0.1.6"]
                                               [aleph "0.4.4"]
+                                              [com.taoensso/sente "1.11.0"]
                                               [ring "1.6.3"]
+                                              [ring/ring-defaults "0.3.1"] ;; Includes ring-anti-forgery
                                               [metosin/ring-http-response "0.9.0"]
                                               [compojure "1.6.0"]
                                               [metosin/compojure-api "2.0.0-alpha12"]

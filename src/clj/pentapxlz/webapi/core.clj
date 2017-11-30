@@ -5,6 +5,7 @@
             [compojure.route :refer [#_resources not-found]]
             [ring.middleware.resource :refer [wrap-resource]]
             [pentapxlz.config :refer [config reload-config!]]
+            [pentapxlz.webapi.websockets.sente :refer [sente-app]]
             [pentapxlz.webapi.stream.state :refer [streaming-frame-state-handler]]
             [pentapxlz.webapi.set-state :refer [put-state-handler put-state-segments-handler]]
             [taoensso.timbre :as t]))
@@ -25,6 +26,8 @@
         (streaming-frame-state-handler "/frames")
         #_(put-state-handler "/frames")
         #_(put-state-segments-handler "/segments")))
+
+    sente-app
 
     (not-found (str "<div align=\"center\">"
                     "No such page, but you can use the" "<br/>"
