@@ -1,10 +1,10 @@
 (ns pentapxlz.mappings.figlet
-  (:require [clj-figlet.core :refer [load-flf render]]
+ #_ (:require [clj-figlet.core :refer [load-flf render]]
             [pentapxlz.pxlz-state :refer [pxlz set-rgbPxlz!]]
             [pentapxlz.mappings.segments :refer [segments #_looped zipvector]]
             [pentapxlz.colors :refer :all]
             [clojure.pprint :refer [pprint]]))
-
+#_#_#_#_#_#_
 (def flf (load-flf "resources/figlet/roman.flf"))
 
 (defn cs:rgbs+default->c->rgb

@@ -3,7 +3,7 @@
             [pentapxlz.examples :as examples]
             [pentapxlz.colors :refer :all]
             [pentapxlz.mappings.segments :refer [segments looped zipvector]]))
-
+#_#_#_
 (defn bisect-segments [segments]
   (let [segments-quot2 (map #(quot % 2) segments)
         segments-rest (mapv - segments segments-quot2)]
