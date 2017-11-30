@@ -8,7 +8,7 @@
             [pentapxlz.webapi.websockets.sente :refer [sente-app]]
             [pentapxlz.webapi.stream.state :refer [streaming-frame-state-handler]]
             [fn2api.web.compojure :refer [->context]]
-            [pentapxlz.webapi.set-state :refer [set-frame put-state-segments-handler]]
+            [pentapxlz.webapi.set-state :refer [set-frame set-frame-segments]]
             [taoensso.timbre :as t]))
 
 (defn create-app []
@@ -27,8 +27,7 @@
 
         (streaming-frame-state-handler "/frames")
         (->context (var set-frame) "/frames")
-
-        #_(put-state-segments-handler "/segments")))
+        (->context (var set-frame) "/frame-segments")))
 
     sente-app
 
