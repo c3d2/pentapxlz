@@ -8,7 +8,7 @@
 
 (def processes {:renderer/quil-frame
                 {:type      :renderer/quil-frame
-                 :framerate 60
+                 :framerate 20
                  :state     :state/ledball1-frame}
                 :animator/shift-ball
                 {:type      :animator/shift
@@ -16,7 +16,7 @@
                  :offset    1
                  :framerate 1}})
 
-(def auto-start [:renderer/quil-frame :animator/shift-ball])
+(def auto-start [:renderer/quil-frame #_:animator/shift-ball])
 
 (def config (atom {:states {:state/ledball1-frame {:layout {:nrPxlz 255}}}}))
 

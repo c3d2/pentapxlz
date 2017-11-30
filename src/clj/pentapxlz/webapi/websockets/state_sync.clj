@@ -7,10 +7,10 @@
   (let [uids (:any @connected-uids)]
        (go (doseq [uid uids]
                   (chsk-send! uid [::sync {:state-atom-name state-atom-name
-                                           :new-state @(resolve-atom state-atom-name) }])))))
+                                           :new-state @(resolve-atom state-atom-name)}])))))
 
 (defn add-watch-state-sync [state-atom-name]
   (add-watch (resolve-atom state-atom-name)
              :sync1
              (fn [_ _ _ _]
-             (broadcast-state-sync! state-atom-name))))
+              (broadcast-state-sync! state-atom-name))))

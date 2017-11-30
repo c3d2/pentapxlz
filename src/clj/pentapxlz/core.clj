@@ -13,7 +13,8 @@
             [pentapxlz.process.util.registry :refer [start! stop! register unregister config!] :as p]
             [pentapxlz.process.util.resolve :refer [resolve-process]]
             [pentapxlz.state :as state]
-            [pentapxlz.webapi.core :refer [server-start server-restart]]))
+            [pentapxlz.webapi.core :refer [server-start server-restart]]
+            [pentapxlz.webapi.websockets.state-sync :refer [add-watch-state-sync]]))
 
 (defn restart-processes!
   "Reloads the config and restarts all running and autostarted process"
@@ -30,8 +31,9 @@
       (apply start! (into started auto-start)))))
 
 (defn -main [& args]
+  (server-start)
   (reload-config!)
   (state/init-states! (:states @config))
   (restart-processes!)
-  (server-start))
+  (add-watch-state-sync :state/ledball1-frame))
 

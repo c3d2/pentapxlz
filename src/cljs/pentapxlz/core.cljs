@@ -7,8 +7,8 @@
             [pentapxlz.frame-generator.spiral]
             [pentapxlz.process.animator.shift]
             [pentapxlz.state :as state]
-            [pentapxlz.webapi.websockets.sente]
-            [pentapxlz.webapi.websockets.state-sync :refer [add-watch-state-sync]]))
+            [pentapxlz.webapi.websockets.sente]))
+
 
 (defn dev-setup []
   (when config/debug?
@@ -28,5 +28,4 @@
 
 (defn -main [& args]
   (state/init-states! config/init-states)
-  (restart-processes!)
-  #_(add-watch-state-sync :state/ledball1-frame))
+  (restart-processes!))
