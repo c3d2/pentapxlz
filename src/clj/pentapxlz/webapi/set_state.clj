@@ -3,7 +3,7 @@
             [compojure.api.sweet :refer [PUT]]
             [clojure.spec.alpha :as s]
             [spec-tools.core :as st]
-            [pentapxlz.frame-generator.segments :refer [segments]]
+            [pentapxlz.frame-generator.segments :as segm]
             [pentapxlz.state :as state :refer [set-simple!]]))
 
 (s/def ::color (s/int-in 0 256))
@@ -13,7 +13,7 @@
 
 (s/def ::target (st/spec #{:state/ledball1-frame :state/ledbeere-frame} {:type :keyword}))  ;; TODO
 
-(s/def ::segment (s/cat :nr int? :pixel ::pixel))
+(s/def ::segment (s/cat :nr pos-int? :pixel ::pixel))
 (s/def ::segments (s/coll-of ::segment))
 
 (s/def ::target+frame (s/keys :req-un [::target ::frame]))
@@ -38,7 +38,7 @@
   ^{:methods {:post {:parameters {:body-params ::target+segments}}}}
   set-frame-segments
   "Set the current frame via segments"
-  [{:keys [target segment-vector]}]
-  (let [r (set-simple! target (segments segment-vector))]
+  [{:keys [target segments]}]
+  (let [r (set-simple! target (segm/segments segments))]
        {:return :ok
         :result (str "set frame of length: " (count r))}))

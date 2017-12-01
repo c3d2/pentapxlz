@@ -27,7 +27,7 @@
 
         (streaming-frame-state-handler "/frames")
         (->context (var set-frame) "/frames")
-        (->context (var set-frame) "/frame-segments")))
+        (->context (var set-frame-segments) "/frame-segments")))
 
     sente-app
 

@@ -51,7 +51,7 @@
                                               [compojure "1.6.0"]
                                               [metosin/compojure-api "2.0.0-alpha12"]
                                               [metosin/spec-tools "0.5.1"]
-                                              [fn2api "0.1.0-SNAPSHOT"]]}
+                                              [fn2api "0.1.1-SNAPSHOT"]]}
              :figlet          {:dependencies [[clj-figlet "0.1.1"]]}
              :quil            {:dependencies [[quil "2.6.0"]]}
              :recommended     [:ustripe-clojure :webapi :figlet :quil]
